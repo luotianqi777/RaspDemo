@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspDemo", "RaspDemo\RaspDemo.csproj", "{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003} = {4FEF94A6-1586-4A57-AA3D-E37A7BE26003}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentDemo", "AgentDemo\AgentDemo.csproj", "{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harmony", "Harmony\Harmony.csproj", "{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A238A48B-852F-4522-AAE1-A79F59F0B0CA}
+	EndGlobalSection
+EndGlobal
