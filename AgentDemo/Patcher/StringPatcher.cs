@@ -4,24 +4,24 @@
 * 创建日期：2020/7/2 17:35:10
 * ==============================================================================*/
 using System;
-using System.Collections.Generic;
-using System.Text;
 using HarmonyLib;
 
-namespace AgentDemo.Startup
+namespace AgentDemo.Patcher
 {
-    // [HarmonyPatch(typeof(String), nameof(String.Insert))]
+    [HarmonyPatch(typeof(String), nameof(String.Insert))]
     class StringPatcher
     {
         public static void Patch()
         {
-           Harmony harmony = new Harmony(nameof(StringPatcher));
+            Harmony harmony = new Harmony(nameof(StringPatcher));
         }
 
-        static bool Prefix()
+        static bool Prefix(ref String __result)
         {
-            Console.WriteLine("string insert hook success");
-            return true;
+            Debuger.WriteLine("string insert hook success");
+            __result = "\nthis string is hooked";
+            return false;
         }
+
     }
 }

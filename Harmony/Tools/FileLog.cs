@@ -14,7 +14,7 @@ namespace HarmonyLib
 		/// <summary>Full pathname of the log file, defaults to a file called <c>harmony.log.txt</c> on your Desktop</summary>
 		/// 
 		//public static string logPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}{Path.DirectorySeparatorChar}harmony.log.txt";
-		public static string logPath = "D:\\harmony.log.txt";
+		public static string logPath = "harmony.log.txt";
 
 		/// <summary>The indent character. The default is <c>tab</c></summary>
 		/// 

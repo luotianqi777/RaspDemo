@@ -9,6 +9,15 @@ using MySql.Data.MySqlClient;
 namespace RaspDemo
 {
 
+    public static class Debuger
+    {
+        public static void WriteLine(string message)
+        {
+            Console.WriteLine(message);
+            System.Diagnostics.Debug.WriteLine(message);
+        }
+    }
+
     public class MySqlManger
     {
         private static MySqlConnection sqlConnection;

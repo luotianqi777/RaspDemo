@@ -47,7 +47,7 @@ namespace AgentDemo.Patcher
             string dllPath = @"bin\Debug\netcoreapp3.1\MySql.Data.dll";
             if (!File.Exists(dllPath))
             {
-                Console.WriteLine(dllPath + " not exists");
+                Debuger.WriteLine(dllPath + " not exists");
                 return null;
             }
             Assembly assembly = Assembly.LoadFrom(dllPath);
