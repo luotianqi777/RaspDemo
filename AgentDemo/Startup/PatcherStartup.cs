@@ -1,51 +1,34 @@
-﻿using AgentDemo.Startup;
-using HarmonyLib;
+﻿using AgentDemo.Patcher;
+using AgentDemo.Startup;
 using Microsoft.AspNetCore.Hosting;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Threading;
 using System.Threading.Tasks;
 
 [assembly: HostingStartup(typeof(PatcherStartup))]
 namespace AgentDemo.Startup
 {
-    public class PatcherStartup : IHostingStartup
+    public class PatchStartupService : BackgroundService
     {
-
-        public static void PatchAll()
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Harmony harmony = new Harmony(nameof(PatcherStartup));
-            harmony.UnpatchAll();
-            harmony.PatchAll();
-            Debuger.WriteLine("Patch all method!\nmethod list:");
-            foreach(var value in harmony.GetPatchedMethods())
+            const int maxLoopTimes = 2;
+            int currentLoopTimes = 0;
+            while (!stoppingToken.IsCancellationRequested && currentLoopTimes++ < maxLoopTimes)
             {
-                Debuger.WriteLine("-\t" + value.Name);
+                await Task.Run(() => BasePatcher.PatchAll());
+                await Task.Delay(1000, stoppingToken);
             }
         }
-
+    }
+    public class PatcherStartup : IHostingStartup
+    {
         public void Configure(IWebHostBuilder builder)
         {
-            //builder.UseConfiguration(async (context,config)=>
-            // builder.ConfigureAppConfiguration(async (context, config) =>
-            // {
-            //     // first patch
-            //     PatchAll();
-            //     // wait website startup
-            //     await Task.Delay(2000);
-            //     // i have no idea why must patch again
-            //     // if not do that, patch don't working
-            //     PatchAll();
-            // });
-            builder.ConfigureServices(async (service) =>
+            builder.ConfigureServices((service) =>
             {
-                // first patch
-                PatchAll();
-                // wait website startup
-                // service.AddPatchService();
-                await Task.Delay(2000);
-                // service.AddPatchService();
-                // i have no idea why must patch again
-                // if not do that, patch don't working
-                PatchAll();
+                service.AddHostedService<PatchStartupService>();
             });
             
         }

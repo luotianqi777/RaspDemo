@@ -8,19 +8,14 @@ using HarmonyLib;
 
 namespace AgentDemo.Patcher
 {
-    [HarmonyPatch(typeof(String), nameof(String.Insert))]
-    class StringPatcher
+    [HarmonyPatch(typeof(String), nameof(String.Insert),new Type[] { typeof(int), typeof(string)})]
+    class StringPatcher:BasePatcher
     {
-        public static void Patch()
+        static bool Prefix(ref String __instance)
         {
-            Harmony harmony = new Harmony(nameof(StringPatcher));
-        }
-
-        static bool Prefix(ref String __result)
-        {
-            Debuger.WriteLine("string insert hook success");
-            __result = "\nthis string is hooked";
-            return false;
+            Debuger.WriteLine($"string {__instance} hook success");
+            // __result = "this string is hooked";
+            return true;
         }
 
     }

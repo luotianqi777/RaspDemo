@@ -12,9 +12,9 @@ namespace AgentDemo
 {
     public static class Debuger
     {
-        public static void WriteLine(string message)
+        public static void WriteLine(object message)
         {
-            FileLog.Log(message);
+            FileLog.Log(message.ToString());
             Console.WriteLine(message);
             System.Diagnostics.Debug.WriteLine(message);
         }

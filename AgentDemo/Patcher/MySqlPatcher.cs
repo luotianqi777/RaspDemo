@@ -1,6 +1,4 @@
 ﻿using System;
-using HarmonyLib;
-using MySql.Data.MySqlClient;
 
 namespace AgentDemo.Patcher
 {
@@ -8,26 +6,14 @@ namespace AgentDemo.Patcher
     /// <summary>
     /// MySqlPatcher
     /// </summary>
-    // [MyPatch("MySql.Data.MySqlClient","MySqlCommand","ExecuteReader",new Type[] { })]
-    [HarmonyPatch(typeof(MySqlCommand), nameof(MySqlCommand.ExecuteReader),new Type[] { })]
-    class MySqlPatcher
+    [MyPatch("MySql.Data.MySqlClient","MySqlCommand","ExecuteReader",new Type[] { typeof(System.Data.CommandBehavior) })]
+    class MySqlPatcher: BasePatcher
     {
-        public static void Patch()
+        public static bool Prefix(ref object __instance)
         {
-            Harmony harmony = new Harmony(nameof(MySqlPatcher));
-            // if (MyPatchAttribute.IsPatch<MySqlPatcher>())
-            // {
-            //     Harmony harmony = new Harmony(nameof(MySqlPatcher));
-            // }
-        }
-
-        public static bool Prefix(ref MySqlCommand __instance)
-        {
-            // Type type = MyPatchAttribute.GetPatchedClassType<MySqlPatcher>();
-            // Debuger.WriteLine("sql command hook success");
-            // string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
-            // Debuger.WriteLine("sql command: "+sqlCommand);
-            Debuger.WriteLine(__instance.CommandText);
+            Type type = MyPatchAttribute.GetPatchedClassType<MySqlPatcher>();
+            string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
+            Debuger.WriteLine($"sql command {sqlCommand} hook success");
             return true;
         }
     }

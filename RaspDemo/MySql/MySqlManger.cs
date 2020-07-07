@@ -42,8 +42,11 @@ namespace RaspDemo
             {
                 builder.Append(mySqlDataReader[1]);
             }
+            mySqlDataReader.Close();
             sqlConnection.Close();
-            return builder.ToString();
+            string result = builder.ToString();
+            _ = result.Insert(0, "test: ");
+            return result;
         }
     }
 }

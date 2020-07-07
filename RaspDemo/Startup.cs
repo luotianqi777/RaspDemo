@@ -39,10 +39,8 @@ namespace RaspDemo
                     Random random = new Random();
                     string result = MySqlManger.ExecQuery(random.Next(1, 7));
                     await context.Response.WriteAsync(result);
-                    await context.Response.WriteAsync(result.Insert(0,"test: "));
                 });
             });
-            Debuger.WriteLine("Query before Website Startup".Insert(0, "test: "));
             Debuger.WriteLine(MySqlManger.ExecQuery(0));
         }
     }
