@@ -15,8 +15,8 @@ namespace AgentDemo
         public static void WriteLine(object message)
         {
             FileLog.Log(message.ToString());
-            Console.WriteLine(message);
-            System.Diagnostics.Debug.WriteLine(message);
+            // Console.WriteLine(message);
+            // System.Diagnostics.Debug.WriteLine(message);
         }
     }
 }

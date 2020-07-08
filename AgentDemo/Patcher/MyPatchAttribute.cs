@@ -31,8 +31,8 @@ namespace AgentDemo.Patcher
         {
             info.declaringType = GetClassType(packageName, className);
             isPatch = info.declaringType != null;
-            info.methodName = methodName;
-            info.argumentTypes = types;
+            info.methodName = isPatch ? methodName:null;
+            info.argumentTypes = isPatch ? types:null;
         }
 
         /// <summary>
@@ -44,7 +44,8 @@ namespace AgentDemo.Patcher
         private static Type GetClassType (string packageName, string className)
         {
             // TODO: 这个地方要通过分析项目文件找出来依赖所对应的dll路径，根据packageName去匹配dllPath
-            string dllPath = @"bin\Debug\netcoreapp3.1\MySql.Data.dll";
+            // string dllPath = @"bin\Debug\netcoreapp3.1\MySql.Data.dll";
+            string dllPath = @"bin\Debug\netcoreapp3.1\MySql.Data.dl";
             if (!File.Exists(dllPath))
             {
                 Debuger.WriteLine(dllPath + " not exists");
@@ -75,5 +76,6 @@ namespace AgentDemo.Patcher
             MyPatchAttribute attribute =  (MyPatchAttribute)GetCustomAttribute(typeof(T), typeof(MyPatchAttribute));
             return attribute.isPatch;
         }
+
     }
 }

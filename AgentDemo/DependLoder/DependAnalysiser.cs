@@ -21,7 +21,7 @@ namespace AgentDemo.DependLoder
         /// <summary>
         /// 默认项目依赖文件路径
         /// </summary>
-        private static string dependFilePath = "*.deps.json";
+        private static string dependFilePath = "RaspDemo.deps.json";
 
         /// <summary>
         /// 项目依赖库的集合
@@ -105,6 +105,7 @@ namespace AgentDemo.DependLoder
             }
             return packageInfoSet;
         }
+
 
     }
 }

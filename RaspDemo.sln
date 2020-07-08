@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaspDemo", "RaspDemo\RaspDemo.csproj", "{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspDemo", "RaspDemo\RaspDemo.csproj", "{3E9B5689-1879-4AEB-9DAC-CB83A04324A9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4FEF94A6-1586-4A57-AA3D-E37A7BE26003} = {4FEF94A6-1586-4A57-AA3D-E37A7BE26003}
 	EndProjectSection
@@ -11,6 +11,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgentDemo", "AgentDemo\AgentDemo.csproj", "{4FEF94A6-1586-4A57-AA3D-E37A7BE26003}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Harmony", "Harmony\Harmony.csproj", "{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentDemoTests", "AgentDemoTests\AgentDemoTests.csproj", "{B25B6DFA-ED48-45EE-A3A0-695DC88DA237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +32,10 @@ Global
 		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAB37846-9BCA-4989-A9C2-ADBBA1B7BA2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B25B6DFA-ED48-45EE-A3A0-695DC88DA237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B25B6DFA-ED48-45EE-A3A0-695DC88DA237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25B6DFA-ED48-45EE-A3A0-695DC88DA237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B25B6DFA-ED48-45EE-A3A0-695DC88DA237}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
