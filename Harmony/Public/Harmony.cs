@@ -10,6 +10,7 @@ namespace HarmonyLib
 	/// 
 	public class Harmony
 	{
+
 		/// <summary>The unique identifier</summary>
 		/// 
 		public string Id { get; private set; }

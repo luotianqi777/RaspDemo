@@ -145,6 +145,7 @@ namespace HarmonyLib
 			var jobs = new PatchJobs<MethodInfo>();
 			foreach (var patchMethod in patchMethods)
 			{
+				if (patchMethod.info.declaringType == null) continue;
 				lastOriginal = patchMethod.info.GetOriginalMethod();
 				if (lastOriginal == null)
 					throw new ArgumentException($"Undefined target method for patch method {patchMethod.info.method.FullDescription()}");

@@ -4,6 +4,7 @@
 * 创建日期：2020/7/3 17:08:44
 * ==============================================================================*/
 
+using System;
 using System.Windows.Markup;
 
 namespace AgentDemo.DependLoder
@@ -29,9 +30,15 @@ namespace AgentDemo.DependLoder
         /// <param name="versionNumber">版本号</param>
         public PackageInfo(string packageName, string versionNumber)
         {
-            PackageName = packageName;
+            PackageName = packageName??throw new Exception("packge name can't be null");
             VersionNumber = versionNumber;
         }
+
+        /// <summary>
+        /// 构造，省略版本号
+        /// </summary>
+        /// <param name="packageName">包名</param>
+        public PackageInfo(string packageName) : this(packageName, "1.0") { }
 
         /// <summary>
         /// 是否对比版本号
@@ -55,7 +62,14 @@ namespace AgentDemo.DependLoder
 
         public override string ToString()
         {
-            return $"Package Name: {PackageName}, Version Number: {VersionNumber}";
+            if (!isCompareVersion)
+            {
+                return PackageName;
+            }
+            else
+            {
+                return $"Package Name: {PackageName}, Version Number: {VersionNumber}";
+            }
         }
     }
 }

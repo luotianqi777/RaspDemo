@@ -17,9 +17,10 @@ namespace AgentDemo.DependLoder.Tests
         [TestMethod()]
         public void GetPackageInfoSetTest()
         {
-            foreach (PackageInfo info in DependAnalysiser.GetPackageInfoSet())
+            foreach ( var info in DependAnalysiser.GetPackageInfos("RaspDemo.deps.json"))
             {
-                Debuger.WriteLine(info);
+                Debuger.WriteLine($"key: {info.Key}");
+                info.Value.ForEach(e => Debuger.WriteLine(e));
             }
         }
     }

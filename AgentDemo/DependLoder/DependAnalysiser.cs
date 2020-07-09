@@ -19,93 +19,108 @@ namespace AgentDemo.DependLoder
     {
 
         /// <summary>
-        /// 默认项目依赖文件路径
-        /// </summary>
-        private static string dependFilePath = "RaspDemo.deps.json";
-
-        /// <summary>
         /// 项目依赖库的集合
         /// </summary>
-        private static HashSet<PackageInfo> packageInfoSet = null;
-
-        /// <summary>
-        /// 获取项目依赖库的集合
-        /// </summary>
-        public static HashSet<PackageInfo> GetPackageInfoSet()
-        {
-            if (packageInfoSet == null)
-            {
-                packageInfoSet = AnalysisDepend(dependFilePath);
-            }
-            return packageInfoSet;
-        }
-
-        /// <summary>
-        /// 设置依赖文件路径
-        /// </summary>
-        /// <param name="filePath">依赖文件路径</param>
-        public static void SetDepenFilePath(string filePath)
-        {
-            dependFilePath = filePath;
-        }
+        private static Dictionary<PackageInfo, List<string>> packageInfos = null;
 
         /// <summary>
         /// 分析依赖文件，将依赖信息放到一个集合
-        /// </summary>
-        /// <param name="filePath">依赖文件路径</param>
+        /// <param name="filePath">依赖文件所在文件路径</param>
         /// <returns>依赖集合</returns>
-        private static HashSet<PackageInfo> AnalysisDepend(string filePath)
+        public static Dictionary<PackageInfo, List<string>> GetPackageInfos(string filePath)
         {
-            packageInfoSet = new HashSet<PackageInfo>();
+            if (packageInfos != null) return packageInfos;
+            packageInfos = new Dictionary<PackageInfo, List<string>>();
             try
             {
+                Debuger.WriteLine($"loading file {filePath}");
                 string fileContext = File.ReadAllText(filePath);
-                if (String.IsNullOrEmpty(fileContext))
-                {
-                    throw new Exception("file open failure");
-                }
-                int startIndex = 0, endIndex = 0;
+                string regexString = @"""[\w|.]+/[\d|.]+"":";
+                Regex regex = new Regex(regexString);
+                int regexStartIndex = 0;
                 while (true)
                 {
-                    startIndex = fileContext.IndexOf("dependencies", endIndex);
-                    if (startIndex == -1) { break; }
-                    endIndex = fileContext.IndexOf('}', startIndex);
-                    /*
-                     * subString:
-                     * "dependencies":{
-                     *   "package name":"version number",
-                     *   "package name":"version number",
-                     *   ...
-                     */
-                    string subString = fileContext[startIndex..endIndex]; ;
-                    // 简化正则："w+(.w+)*": "d+(.d+)*"
-                    string regexString = @"""\w+([.]\w+)*"": *""\d+([.]\d+)*""";
-                    Regex regex = new Regex(regexString);
-                    int regexStartIndex = 0;
-                    while (true)
+                    // 正则匹配 package info
+                    Match match = regex.Match(fileContext, regexStartIndex);
+                    if (!match.Success) { break; }
+                    // 储存 package info
+                    string packageInfoString = match.Value[1..match.Value.IndexOf('"', 2)];
+                    int midIndex = packageInfoString.IndexOf('/');
+                    PackageInfo packageInfo = new PackageInfo(
+                        packageInfoString.Substring(0, midIndex),
+                        packageInfoString.Substring(midIndex + 1));
+                    // 截取package info的json数据在字符串中的起始位置
+                    int startIndex = match.Index + match.Length;
+                    int endIndex = GetNextBracketsIndex(fileContext, startIndex);
+                    // 更新下一次正则查找起始位置
+                    regexStartIndex = endIndex;
+                    // 获取compile的json数据
+                    int compileStartIndex = fileContext.IndexOf("compile",startIndex);
+                    if (compileStartIndex == -1 || compileStartIndex > endIndex) continue;
+                    string jsonString = fileContext[compileStartIndex..endIndex];
+                    // 获取dll路径
+                    List<string> dllPathString = GetDllPaths(jsonString);
+                    // 将dll路径与包名作为键值对存储起来
+                    if (dllPathString.Count > 0)
                     {
-                        Match match = regex.Match(subString, regexStartIndex);
-                        if (!match.Success) { break; }
-                        regexStartIndex += match.Length;
-                        /*
-                         * keyValuePair:
-                         * ^"package name":"version number"$
-                         */
-                        string keyValuePair = match.Value.Replace("\"",string.Empty);
-                        int midIndex = keyValuePair.IndexOf(": ");
-                        string packageName = keyValuePair.Substring(0, midIndex);
-                        string versionNumber = keyValuePair.Substring(midIndex+2);
-                        packageInfoSet.Add(new PackageInfo(packageName, versionNumber));
+                        packageInfos.Add(packageInfo, dllPathString);
                     }
                 }
+                Debuger.WriteLine($"analysis success! {packageInfos.Count} package find!");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message + e.StackTrace);
             }
-            return packageInfoSet;
+            return packageInfos;
         }
 
+
+        /// <summary>
+        /// 获取一个字符串中从startIndex位置起下一个{所对应}的位置
+        /// 比如{{}}，应返回第二个}的位置；而{}}应返回第一个}的位置；{{}则应返回-1
+        /// </summary>
+        /// <param name="context">要查找的字符串</param>
+        /// <param name="startIndex">起始查找位置</param>
+        /// <returns>能找到匹配的}返回位置下标，找不到返回-1</returns>
+        private static int GetNextBracketsIndex(string context, int startIndex)
+        {
+            int count = 0;
+            Regex regex = new Regex("[{|}]");
+            do
+            {
+                Match match = regex.Match(context, startIndex);
+                if (!match.Success) return -1;
+                switch (match.Value)
+                {
+                    case "{":count++; break;
+                    case "}":count--; break;
+                    default:break;
+                }
+                startIndex = match.Index + match.Length;
+            } while (count != 0);
+            return startIndex;
+        }
+
+        /// <summary>
+        /// 从一段json字符串中获取dll路径信息
+        /// </summary>
+        /// <param name="jsonString">json字符串</param>
+        /// <returns>dll路径列表</returns>
+        private static List<string> GetDllPaths(string jsonString)
+        {
+            List<string> dllPath = new List<string>();
+            Regex regex = new Regex(@"(\w+[.])+dll");
+            int startIndex = 0;
+            while (true)
+            {
+                Match match = regex.Match(jsonString, startIndex);
+                if (!match.Success) break;
+                startIndex = match.Index + match.Length;
+                dllPath.Add(match.Value);
+            }
+            return dllPath;
+        }
 
     }
 }
