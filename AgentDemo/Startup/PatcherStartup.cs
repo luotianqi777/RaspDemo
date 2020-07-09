@@ -13,7 +13,7 @@ namespace AgentDemo.Startup
     {
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            const int maxLoopTimes = 2;
+            const int maxLoopTimes = 3;
             int currentLoopTimes = 0;
             while (!stoppingToken.IsCancellationRequested && currentLoopTimes++ < maxLoopTimes)
             {

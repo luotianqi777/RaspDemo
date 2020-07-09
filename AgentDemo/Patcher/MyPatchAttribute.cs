@@ -26,10 +26,10 @@ namespace AgentDemo.Patcher
                                 string methodName,
                                 Type[] types)
         {
-            info.declaringType = GetClassType(packageName, moudleName, className);
-            bool isPatch = info.declaringType != null;
-            info.methodName = isPatch ? methodName : null;
-            info.argumentTypes = isPatch ? types : null;
+            info.declaringType = GetClassType(packageName, moudleName, className)
+                                 ?? throw new Exception($"can't create class type {packageName}.{moudleName}.{className}");
+            info.methodName = methodName;
+            info.argumentTypes = types;
         }
 
         /// <summary>
@@ -40,15 +40,14 @@ namespace AgentDemo.Patcher
         /// <returns>Class类型，返回null说明找不到路径</returns>
         private static Type GetClassType(string packageName, string moudleName, string className)
         {
-            // basePath: 项目文件所在路径
-            const string basePath = @"bin\Debug\netcoreapp3.1\";
+            // basePath: 项目依赖dll所在文件夹路径
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
             // 获取包所对应的dll路径
-            Dictionary<PackageInfo, List<string>> keyValuePairs = DependAnalysiser.GetPackageInfos(basePath + "RaspDemo.deps.json");
+            Dictionary<PackageInfo, List<string>> keyValuePairs = DependAnalysiser.GetPackageInfos(Path.Combine(basePath, "RaspDemo.deps.json"));
             keyValuePairs.TryGetValue(new PackageInfo(packageName), out List<string> dllPaths);
             // 成功获取路径则读取程序集，否则返回null代表找不到路径，应当停止hook该方法
             if (dllPaths == null || dllPaths.Count == 0)
             {
-                Debuger.WriteLine($"package {packageName} not find");
                 return null;
             }
             string dllPath = basePath + dllPaths[0];
@@ -63,7 +62,7 @@ namespace AgentDemo.Patcher
                 Type type = assembly.GetType($"{packageName}.{moudleName}.{className}");
                 return type;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debuger.WriteLine(e.Source + e.Message + e.StackTrace);
             }
@@ -75,8 +74,9 @@ namespace AgentDemo.Patcher
         /// </summary>
         /// <typeparam name="T">Patcher的类型</typeparam>
         /// <returns>Patch的Class类型</returns>
-        public static Type GetPatchedClassType<T>()where T:BasePatcher {
-            MyPatchAttribute attribute =  (MyPatchAttribute)GetCustomAttribute(typeof(T), typeof(MyPatchAttribute));
+        public static Type GetPatchedClassType<T>() where T : BasePatcher
+        {
+            MyPatchAttribute attribute = (MyPatchAttribute)GetCustomAttribute(typeof(T), typeof(MyPatchAttribute));
             return attribute.info.declaringType;
         }
 

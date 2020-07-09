@@ -10,6 +10,7 @@ namespace HarmonyLib
 	/// 
 	public class HarmonyMethod
 	{
+
 		/// <summary>The original method</summary>
 		/// 
 		public MethodInfo method; // need to be called 'method'

@@ -9,6 +9,7 @@ using System;
 namespace AgentDemo.Patcher
 {
     [HarmonyPatch(typeof(String), nameof(String.Insert),new Type[] { typeof(int), typeof(string)})]
+    // [MyPatch("System",null,"String","Insert",null)]
     class StringPatcher:BasePatcher
     {
         static bool Prefix(ref String __instance)
