@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,14 @@ namespace RaspDemo
 {
     public class Startup
     {
+        // class HttpMiddleware : IMiddleware
+        // {
+        //     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        //     {
+        //         Debuger.WriteLine(context.Request.Scheme);
+        //         await next(context);
+        //     }
+        // }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -41,7 +50,6 @@ namespace RaspDemo
                     await context.Response.WriteAsync(result);
                 });
             });
-            Debuger.WriteLine(MySqlManger.ExecQuery(0));
         }
     }
 }

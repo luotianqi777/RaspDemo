@@ -16,15 +16,8 @@ namespace AgentDemo.Patcher
         public static void PatchAll()
         {
             Harmony harmony = new Harmony(nameof(BasePatcher));
-            try
-            {
-                harmony.UnpatchAll();
-                harmony.PatchAll();
-            }
-            catch(Exception e)
-            {
-                Debuger.WriteLine(e.Message);
-            }
+            harmony.UnpatchAll();
+            harmony.PatchAll();
             Debuger.WriteLine("Patch all method!\nmethod list:");
             foreach (var value in harmony.GetPatchedMethods())
             {

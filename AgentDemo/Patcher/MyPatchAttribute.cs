@@ -19,54 +19,45 @@ namespace AgentDemo.Patcher
     /// </summary>
     public class MyPatchAttribute : HarmonyPatch
     {
+        public string FullClassName { get; }
 
         public MyPatchAttribute(string packageName,
-                                string moudleName,
                                 string className,
                                 string methodName,
                                 Type[] types)
         {
-            info.declaringType = GetClassType(packageName, moudleName, className)
-                                 ?? throw new Exception($"can't create class type {packageName}.{moudleName}.{className}");
-            info.methodName = methodName;
-            info.argumentTypes = types;
+            Type type = GetClassType(packageName, className);
+            if (type == null)
+            {
+                info = null;
+                Debuger.WriteLine($"can't find class {className} from package {packageName}");
+            }
+            else
+            {
+                info.declaringType = type;
+                info.methodName = methodName;
+                info.argumentTypes = types;
+            }
         }
 
-        /// <summary>
         /// 获取要Patch的Class类型
         /// </summary>
         /// <param name="packageName">包名</param>
-        /// <param name="className">Class名</param>
+        /// <param name="className">类名</param>
         /// <returns>Class类型，返回null说明找不到路径</returns>
-        private static Type GetClassType(string packageName, string moudleName, string className)
+        private static Type GetClassType(string packageName, string className)
         {
-            // basePath: 项目依赖dll所在文件夹路径
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            // 获取包所对应的dll路径
-            Dictionary<PackageInfo, List<string>> keyValuePairs = DependAnalysiser.GetPackageInfos(Path.Combine(basePath, "RaspDemo.deps.json"));
-            keyValuePairs.TryGetValue(new PackageInfo(packageName), out List<string> dllPaths);
-            // 成功获取路径则读取程序集，否则返回null代表找不到路径，应当停止hook该方法
-            if (dllPaths == null || dllPaths.Count == 0)
-            {
-                return null;
-            }
-            string dllPath = basePath + dllPaths[0];
-            if (!File.Exists(dllPath))
-            {
-                Debuger.WriteLine($"file {dllPath} not find");
-                return null;
-            }
             try
             {
-                Assembly assembly = Assembly.LoadFrom(dllPath);
-                Type type = assembly.GetType($"{packageName}.{moudleName}.{className}");
-                return type;
+                // 获取包所对应的dll路径
+                DependAnalysiser.GetPackageInfos().TryGetValue(new PackageInfo(packageName), out List<string> dllPaths);
+                // 成功获取路径则读取程序集，否则返回null代表找不到路径，应当停止hook该方法
+                return Assembly.LoadFrom(dllPaths[0])?.GetType(className);
             }
-            catch (Exception e)
+            catch
             {
-                Debuger.WriteLine(e.Source + e.Message + e.StackTrace);
+                return null;
             }
-            return null;
         }
 
         /// <summary>

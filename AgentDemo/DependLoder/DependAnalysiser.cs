@@ -7,7 +7,9 @@ using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -17,6 +19,10 @@ namespace AgentDemo.DependLoder
 {
     public class DependAnalysiser
     {
+        /// <summary>
+        /// 依赖文件所在文件夹路径
+        /// </summary>
+        private static readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
         /// <summary>
         /// 项目依赖库的集合
@@ -25,14 +31,15 @@ namespace AgentDemo.DependLoder
 
         /// <summary>
         /// 分析依赖文件，将依赖信息放到一个集合
-        /// <param name="filePath">依赖文件所在文件路径</param>
         /// <returns>依赖集合</returns>
-        public static Dictionary<PackageInfo, List<string>> GetPackageInfos(string filePath)
+        public static Dictionary<PackageInfo, List<string>> GetPackageInfos()
         {
             if (packageInfos != null) return packageInfos;
             packageInfos = new Dictionary<PackageInfo, List<string>>();
             try
             {
+                // 获取依赖文件名称
+                string filePath = new DirectoryInfo(basePath).GetFiles("*.deps.json")[0].FullName;
                 Debuger.WriteLine($"loading file {filePath}");
                 string fileContext = File.ReadAllText(filePath);
                 string regexString = @"""[\w|.]+/[\d|.]+"":";
@@ -55,7 +62,7 @@ namespace AgentDemo.DependLoder
                     // 更新下一次正则查找起始位置
                     regexStartIndex = endIndex;
                     // 获取compile的json数据
-                    int compileStartIndex = fileContext.IndexOf("compile",startIndex);
+                    int compileStartIndex = fileContext.IndexOf("compile", startIndex);
                     if (compileStartIndex == -1 || compileStartIndex > endIndex) continue;
                     string jsonString = fileContext[compileStartIndex..endIndex];
                     // 获取dll路径
@@ -63,7 +70,7 @@ namespace AgentDemo.DependLoder
                     // 将dll路径与包名作为键值对存储起来
                     if (dllPathString.Count > 0)
                     {
-                        packageInfos.Add(packageInfo, dllPathString);
+                        packageInfos.Add(packageInfo,dllPathString);
                     }
                 }
                 Debuger.WriteLine($"analysis success! {packageInfos.Count} package find!");
@@ -93,9 +100,9 @@ namespace AgentDemo.DependLoder
                 if (!match.Success) return -1;
                 switch (match.Value)
                 {
-                    case "{":count++; break;
-                    case "}":count--; break;
-                    default:break;
+                    case "{": count++; break;
+                    case "}": count--; break;
+                    default: break;
                 }
                 startIndex = match.Index + match.Length;
             } while (count != 0);
@@ -117,7 +124,7 @@ namespace AgentDemo.DependLoder
                 Match match = regex.Match(jsonString, startIndex);
                 if (!match.Success) break;
                 startIndex = match.Index + match.Length;
-                dllPath.Add(match.Value);
+                dllPath.Add(Path.Combine(basePath, match.Value));
             }
             return dllPath;
         }
