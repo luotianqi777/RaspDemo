@@ -5,6 +5,10 @@
 * ==============================================================================*/
 using HarmonyLib;
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AgentDemo.Patcher
 {
@@ -23,6 +27,14 @@ namespace AgentDemo.Patcher
             {
                 Debuger.WriteLine("-\t" + value.Name);
             }
+        }
+
+        public static void PrintStack()
+        {
+            Debuger.WriteLine(string.Join("->", (from stack in new StackTrace().GetFrames()
+                                                 where stack.GetILOffset() != StackFrame.OFFSET_UNKNOWN && stack.GetNativeOffset() != StackFrame.OFFSET_UNKNOWN
+                                                 select $"{stack.GetMethod().Name}()")
+                                                .Reverse()));
         }
     }
 }

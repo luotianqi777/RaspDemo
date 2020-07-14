@@ -35,6 +35,7 @@ namespace AgentDemo.Patcher
             public static bool Prefix(ref object __instance)
             {
                 string sqlCommand = GetCommandText<ExecuteReader>(__instance);
+                PrintStack();
                 Debuger.WriteLine(sqlCommand);
                 return true;
             }
