@@ -31,8 +31,9 @@ namespace AgentDemo.Patcher
 
         public static void PrintStack()
         {
-            Debuger.WriteLine(string.Join("->", (from stack in new StackTrace().GetFrames()
-                                                 where stack.GetILOffset() != StackFrame.OFFSET_UNKNOWN && stack.GetNativeOffset() != StackFrame.OFFSET_UNKNOWN
+            var stacks = new StackTrace().GetFrames();
+            Debuger.WriteLine(string.Join("->", (from stack in stacks
+                                                 where stack.GetILOffset() != StackFrame.OFFSET_UNKNOWN
                                                  select $"{stack.GetMethod().Name}()")
                                                 .Reverse()));
         }

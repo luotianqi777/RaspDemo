@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Builder;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using System.Net.Http;
 
 namespace AgentDemo.Patcher
@@ -76,6 +77,18 @@ namespace AgentDemo.Patcher
             public static void Postfix()
             {
                 Debuger.WriteLine("http request hook success");
+            }
+        }
+
+        [HarmonyPatch(typeof(IStartup))]
+        [HarmonyPatch(nameof(IStartup.Configure))]
+        [HarmonyPatch(new Type[] {typeof(IApplicationBuilder)})]
+        class ApplicationConfigure
+        {
+            public static bool Prefix()
+            {
+                Debuger.WriteLine("Test");
+                return true;
             }
         }
 

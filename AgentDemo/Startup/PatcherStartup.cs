@@ -1,4 +1,5 @@
 ﻿using AgentDemo.Startup;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,16 +14,16 @@ namespace AgentDemo.Startup
             builder.ConfigureServices((service) =>
             {
                 service.AddHostedService<PatchStartupService>();
-                // 通过这种方式来获取Application行不通
                 // service.AddSingleton<HttpMiddleware>();
-                // var app = new ApplicationBuilder(service.BuildServiceProvider());
+                // // 通过这种方式来获取Application行不通
+                // // service.BuildServiceProvider()
+                // var app = new ApplicationBuilder(builder.Build().Services);
                 // app.UseMiddleware<HttpMiddleware>();
                 // app.UseHttpService();
             });
             builder.ConfigureAppConfiguration((hostBuilderContext,configureBuilder) =>
             {
             });
-            
         }
     }
 }

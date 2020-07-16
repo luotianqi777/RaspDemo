@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using HarmonyLib;
+using System.Runtime.Loader;
 
 namespace AgentDemo.Patcher
 {
@@ -26,15 +27,15 @@ namespace AgentDemo.Patcher
                                 string methodName,
                                 Type[] types)
         {
-            Type type = GetClassType(packageName, className);
-            if (type == null)
+            Type classType = GetClassType(packageName, className);
+            if (classType == null)
             {
                 info = null;
                 Debuger.WriteLine($"can't find class {className} from package {packageName}");
             }
             else
             {
-                info.declaringType = type;
+                info.declaringType = classType;
                 info.methodName = methodName;
                 info.argumentTypes = types;
             }
@@ -51,7 +52,7 @@ namespace AgentDemo.Patcher
             {
                 // 获取包所对应的dll路径
                 DependAnalysiser.GetPackageInfos().TryGetValue(new PackageInfo(packageName), out List<string> dllPaths);
-                // 成功获取路径则读取程序集，否则返回null代表找不到路径，应当停止hook该方法
+                // 成功获取路径则读取程序集，否则返回null代表找不到文件或类，应当停止hook该方法
                 return Assembly.LoadFrom(dllPaths[0])?.GetType(className);
             }
             catch
