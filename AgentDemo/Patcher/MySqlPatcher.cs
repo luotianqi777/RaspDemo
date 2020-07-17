@@ -6,6 +6,7 @@ namespace AgentDemo.Patcher
     class MySql
     {
 
+        #region
         [MyPatch("MySql.Data", "MySql.Data.MySqlClient.BaseCommandInterceptor", "ExecuteNonQuery", null)]
         public class ExecuteNonQuery : BasePatcher
         {
@@ -16,6 +17,7 @@ namespace AgentDemo.Patcher
                 return true;
             }
         }
+        #endregion
 
         [MyPatch("MySql.Data", "MySql.Data.MySqlClient.MySqlCommand", "ExecuteReader", new Type[] { typeof(System.Data.CommandBehavior) })]
         public class ExecuteReader : BasePatcher
@@ -24,8 +26,8 @@ namespace AgentDemo.Patcher
             {
                 Type type = MyPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
-                BasePatcher.PrintStack();
                 Debuger.WriteLine(sqlCommand);
+                // _ = __instance;
                 return true;
             }
         }

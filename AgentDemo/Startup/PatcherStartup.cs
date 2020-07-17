@@ -1,6 +1,9 @@
-﻿using AgentDemo.Startup;
+﻿using AgentDemo.HttpLisenter;
+using AgentDemo.Patcher;
+using AgentDemo.Startup;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: HostingStartup(typeof(PatcherStartup))]
@@ -11,18 +14,26 @@ namespace AgentDemo.Startup
     {
         public void Configure(IWebHostBuilder builder)
         {
+            builder.ConfigureAppConfiguration((hostBuilderContext,configureBuilder) =>
+            {
+                BasePatcher.PatchAll();
+            });
             builder.ConfigureServices((service) =>
             {
-                service.AddHostedService<PatchStartupService>();
-                // service.AddSingleton<HttpMiddleware>();
+                // XHttpLisenter lisenter = new XHttpLisenter();
+                // lisenter.Add("localhost",5000);
+                // lisenter.Add("localhost",5001);
+                // lisenter.Start();
+
                 // // 通过这种方式来获取Application行不通
+                // service.AddSingleton<HttpMiddleware>();
                 // // service.BuildServiceProvider()
                 // var app = new ApplicationBuilder(builder.Build().Services);
                 // app.UseMiddleware<HttpMiddleware>();
                 // app.UseHttpService();
-            });
-            builder.ConfigureAppConfiguration((hostBuilderContext,configureBuilder) =>
-            {
+
+                service.AddHostedService<PatchStartupService>();
+
             });
         }
     }

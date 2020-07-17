@@ -14,21 +14,19 @@ namespace RaspDemo
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder
-                    .UseStartup<Startup>()
-                    .Configure((app) =>
-                    {
-                        app.Use((next) =>
-                        {
-                            return async (context) =>
-                            {
-                                Debuger.WriteLine("C");
-                                await next(context);
-                                Debuger.WriteLine("C");
-                            };
-                        });
-                    })
-                    ;
+                    webBuilder.UseStartup<Startup>();
+                    // .Configure((app) =>
+                    // {
+                    //     app.Use((next) =>
+                    //     {
+                    //         return async (context) =>
+                    //         {
+                    //             Debuger.WriteLine("C");
+                    //             await next(context);
+                    //             Debuger.WriteLine("C");
+                    //         };
+                    //     });
+                    // })
                 });
     }
 }

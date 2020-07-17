@@ -12,12 +12,44 @@ using Microsoft.AspNetCore.Builder;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Builder;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http.Features;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Builder.Internal;
 
 namespace AgentDemo.Patcher
 {
+    /*
     class Http
     {
+
+        [HarmonyPatch(typeof(ApplicationBuilderFactory))]
+        [HarmonyPatch(nameof(ApplicationBuilderFactory.CreateBuilder))]
+        [HarmonyPatch(new Type[] {typeof(IFeatureCollection)})]
+        class ApplicationConfigure
+        {
+            public static bool Prefix()
+            {
+                Debuger.WriteLine("Test");
+                return true;
+            }
+        }
+
+        #region
+        // [HarmonyPatch(typeof(ApplicationBuilder))]
+        // [HarmonyPatch(MethodType.Constructor)]
+        // [HarmonyPatch(new Type[] {typeof(IServiceProvider), typeof(object)})]
+        // // [MyPatch("Microsoft.AspNetCore.Http","Microsoft.AspNetCore.Builder.Internal.ApplicationBuilder",null,new Type[] {typeof(IServiceProvider), typeof(object)})]
+        // class ApplicationBuilderConstructor
+        // {
+        //     public static bool Prefix()
+        //     {
+        //         Debuger.WriteLine("Test");
+        //         return true;
+        //     }
+        // }
+
         [HarmonyPatch(typeof(HttpListener))]
         [HarmonyPatch(nameof(HttpListener.GetContext))]
         class GetContext
@@ -79,18 +111,8 @@ namespace AgentDemo.Patcher
                 Debuger.WriteLine("http request hook success");
             }
         }
-
-        [HarmonyPatch(typeof(IStartup))]
-        [HarmonyPatch(nameof(IStartup.Configure))]
-        [HarmonyPatch(new Type[] {typeof(IApplicationBuilder)})]
-        class ApplicationConfigure
-        {
-            public static bool Prefix()
-            {
-                Debuger.WriteLine("Test");
-                return true;
-            }
-        }
+        #endregion
 
     }
+    */
 }

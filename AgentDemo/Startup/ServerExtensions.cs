@@ -16,6 +16,7 @@ namespace AgentDemo.Startup
     {
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // 只PatchAll一次不能保证成功
             const int maxLoopTimes = 2;
             int currentLoopTimes = 0;
             while (!stoppingToken.IsCancellationRequested && currentLoopTimes++ < maxLoopTimes)

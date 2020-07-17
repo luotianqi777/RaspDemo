@@ -36,6 +36,7 @@ namespace AgentDemo.Patcher
             else
             {
                 info.declaringType = classType;
+                if (methodName == null) info.methodType = MethodType.Constructor;
                 info.methodName = methodName;
                 info.argumentTypes = types;
             }
