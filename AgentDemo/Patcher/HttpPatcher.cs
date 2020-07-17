@@ -5,21 +5,23 @@
 * ==============================================================================*/
 using HarmonyLib;
 using System;
-using System.Net;
-using System.Net.WebSockets;
 using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Builder;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Builder;
-using System.Net.Http;
-using Microsoft.AspNetCore.Http.Features;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Builder.Internal;
 
 namespace AgentDemo.Patcher
 {
+    [HarmonyPatch(typeof(HostingApplication))]
+    [HarmonyPatch(nameof(HostingApplication.ProcessRequestAsync))]
+    [HarmonyPatch(new Type[] { typeof(HostingApplication.Context)})]
+    class ProcessRequest
+    {
+        //'Microsoft.AspNetCore.Hosting.Internal.HostingApplication' from assembly 'Microsoft.AspNetCore.Hosting, 
+        public static bool Prefix()
+        {
+            Debuger.WriteLine("Test");
+            return true;
+        }
+    }
+
     /*
     class Http
     {
@@ -115,4 +117,5 @@ namespace AgentDemo.Patcher
 
     }
     */
+
 }

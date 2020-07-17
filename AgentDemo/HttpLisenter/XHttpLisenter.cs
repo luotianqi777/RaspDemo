@@ -3,9 +3,10 @@
 * 创 建 者：Luo Tian Qi
 * 创建日期：2020/7/17 9:51:13
 * ==============================================================================*/
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
-namespace AgentDemo.HttpLisenter
+namespace AgentDemo.XHttpLisenter
 {
     public class XHttpLisenter
     {

@@ -28,26 +28,6 @@ namespace RaspDemo
 
             app.UseRouting();
 
-            app.Use((next) =>
-            {
-                return async (context) =>
-                {
-                    Debuger.WriteLine("A");
-                    await next(context);
-                    Debuger.WriteLine("A");
-                };
-            });
-
-            app.Use((next) =>
-            {
-                return async (context) =>
-                {
-                    Debuger.WriteLine("B");
-                    await next(context);
-                    Debuger.WriteLine("B");
-                };
-            });
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context =>
