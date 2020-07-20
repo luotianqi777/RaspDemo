@@ -15,18 +15,6 @@ namespace RaspDemo
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    // .Configure((app) =>
-                    // {
-                    //     app.Use((next) =>
-                    //     {
-                    //         return async (context) =>
-                    //         {
-                    //             Debuger.WriteLine("C");
-                    //             await next(context);
-                    //             Debuger.WriteLine("C");
-                    //         };
-                    //     });
-                    // })
                 });
     }
 }

@@ -26,35 +26,4 @@ namespace AgentDemo.Startup
             }
         }
     }
-
-    /// <summary>
-    /// Http中间件
-    /// </summary>
-    class HttpMiddleware : IMiddleware
-    {
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-        {
-            Debuger.WriteLine(context.Request.Body);
-            await next(context);
-        }
-    }
-
-    /// <summary>
-    /// 拓展服务
-    /// </summary>
-    public static class HttpExtensions
-    {
-        public static void UseHttpService(this IApplicationBuilder app)
-        {
-            RequestDelegate middle(RequestDelegate next)
-            {
-                return context => {
-                    Debuger.WriteLine(context.Request.Path);
-                    return next(context); };
-            }
-            app.Use(middle);
-        }
-    }
-
-
 }

@@ -1,40 +1,53 @@
-﻿using AgentDemo.XHttpLisenter;
-using AgentDemo.Patcher;
+﻿using AgentDemo.Patcher;
 using AgentDemo.Startup;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Builder;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
+using System;
+using Microsoft.AspNetCore.Builder.Internal;
+using System.Collections.Generic;
 
-[assembly: HostingStartup(typeof(PatcherStartup))]
+[assembly: HostingStartup(typeof(MyHostingStartup))]
 namespace AgentDemo.Startup
 {
 
-    public class PatcherStartup : IHostingStartup
+    public class MyHostingStartup : IHostingStartup
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration((hostBuilderContext,configureBuilder) =>
+            builder.ConfigureAppConfiguration((hostBuilderContext, configureBuilder) =>
             {
                 BasePatcher.PatchAll();
             });
             builder.ConfigureServices((service) =>
             {
-                // XHttpLisenter lisenter = new XHttpLisenter();
-                // lisenter.Add("localhost",5000);
-                // lisenter.Add("localhost",5001);
-                // lisenter.Start();
-
-                // // 通过这种方式来获取Application行不通
-                // service.AddSingleton<HttpMiddleware>();
-                // // service.BuildServiceProvider()
-                // var app = new ApplicationBuilder(builder.Build().Services);
-                // app.UseMiddleware<HttpMiddleware>();
-                // app.UseHttpService();
-
                 service.AddHostedService<PatchStartupService>();
-
             });
+            builder.UseStartup<MyStartup>();
         }
     }
+
+    public class MyStartup
+    {
+        public void Configure(IApplicationBuilder app)
+        {
+            app.Use((next) =>{
+                return async (context) =>
+                {
+                    Debuger.WriteLine("Test");
+                    await next(context);
+                };
+            });
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            _ = services ?? throw new Exception("no services");
+        }
+    }
+
 }

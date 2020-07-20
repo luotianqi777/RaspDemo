@@ -31,7 +31,7 @@ namespace AgentDemo.Patcher
             if (classType == null)
             {
                 info = null;
-                Debuger.WriteLine($"can't find class {className} from package {packageName}");
+                Debuger.WriteLine($"class {className} not find from package {packageName}");
             }
             else
             {
@@ -54,7 +54,10 @@ namespace AgentDemo.Patcher
                 // 获取包所对应的dll路径
                 DependAnalysiser.GetPackageInfos().TryGetValue(new PackageInfo(packageName), out List<string> dllPaths);
                 // 成功获取路径则读取程序集，否则返回null代表找不到文件或类，应当停止hook该方法
-                return Assembly.LoadFrom(dllPaths[0])?.GetType(className);
+                string dllPath = dllPaths?[0] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{packageName}.dll");
+                Assembly assembly = Assembly.LoadFrom(dllPath);
+                return assembly?.GetType(className);
+                // return Assembly.LoadFrom(dllPath)?.GetType(className);
             }
             catch
             {

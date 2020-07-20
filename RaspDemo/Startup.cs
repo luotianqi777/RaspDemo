@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +32,17 @@ namespace RaspDemo
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("test", async context =>
+                 {
+                     // string packageName = "Microsoft.AspNetCore.Hosting";
+                     // string className = "Microsoft.AspNetCore.Hosting.HostingApplication";
+                     // string methodName = "ProcessRequestAsync";
+                     // string dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{packageName}.dll");
+                     // Type type = Assembly.LoadFrom(dllPath)?.GetType(className);
+                     // type.GetMethod(methodName).Invoke()
+                     await context.Response.WriteAsync("Demo");
+                 });
+
                 endpoints.MapGet("/", async context =>
                 {
                     Random random = new Random();
