@@ -31,7 +31,7 @@ namespace RaspDemo
         /// <summary>
         /// 查询测试
         /// </summary>
-        public static string ExecQuery(int? id)
+        public static string ExecQuery(string id)
         {
             sqlConnection = new MySqlConnection(SqlString.Connect);
             sqlConnection.Open();
@@ -48,5 +48,6 @@ namespace RaspDemo
             _ = result.Insert(0, "test: ");
             return result;
         }
+
     }
 }

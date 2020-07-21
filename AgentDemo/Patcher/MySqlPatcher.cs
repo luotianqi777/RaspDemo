@@ -1,22 +1,11 @@
-﻿using System;
+﻿using AgentDemo.Logic;
+using System;
 
 namespace AgentDemo.Patcher
 {
 
     class MySql
     {
-
-        #region
-        [MyPatch("MySql.Data", "MySql.Data.MySqlClient.BaseCommandInterceptor", "ExecuteNonQuery", null)]
-        public class ExecuteNonQuery : BasePatcher
-        {
-            public static bool Prefix(string sql, ref int returnValue)
-            {
-                _ = returnValue;
-                Debuger.WriteLine(sql);
-                return true;
-            }
-        }
 
         [MyPatch("MySql.Data", "MySql.Data.MySqlClient.MySqlCommand", "ExecuteReader", new Type[] { typeof(System.Data.CommandBehavior) })]
         public class ExecuteReader : BasePatcher
@@ -26,10 +15,12 @@ namespace AgentDemo.Patcher
                 Type type = MyPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
                 Debuger.WriteLine(sqlCommand);
-                // _ = __instance;
+                if (SqlLogic.IsInject(sqlCommand))
+                {
+                    Debuger.WriteLine("有注入风险");
+                }
                 return true;
             }
         }
-        #endregion
     }
 }

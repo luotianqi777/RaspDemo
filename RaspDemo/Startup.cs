@@ -32,22 +32,16 @@ namespace RaspDemo
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("test", async context =>
+                endpoints.MapGet("test/{id}", async context =>
                  {
-                     // string packageName = "Microsoft.AspNetCore.Hosting";
-                     // string className = "Microsoft.AspNetCore.Hosting.HostingApplication";
-                     // string methodName = "ProcessRequestAsync";
-                     // string dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{packageName}.dll");
-                     // Type type = Assembly.LoadFrom(dllPath)?.GetType(className);
-                     // type.GetMethod(methodName).Invoke()
-                     await context.Response.WriteAsync("Demo");
+                     var id = context.Request.RouteValues["id"];
+                     string result = MySqlManger.ExecQuery(id.ToString());
+                     await context.Response.WriteAsync(result);
                  });
 
                 endpoints.MapGet("/", async context =>
                 {
-                    Random random = new Random();
-                    string result = MySqlManger.ExecQuery(random.Next(1, 7));
-                    await context.Response.WriteAsync(result);
+                    await context.Response.WriteAsync("Hello");
                 });
             });
         }
