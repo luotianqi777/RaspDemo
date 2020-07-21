@@ -14,11 +14,7 @@ namespace AgentDemo.Logic
     class SqlLogic
     {
         // 规则列表
-        private static class RuleLists
-        {
-            public static readonly string[] sqlInjectBlackStringList = new string[] { "select", "0x", "or", "!", "/", "*", "=", ";" };
-            public static readonly char[] sqlTokenList = new char[] { ' ' };
-        }
+        public static readonly string[] sqlCommandKeywordList = "and|exec|insert|select|drop|grant|alter|delete|update|count|chr|mid|master|truncate|char|declare|or|*|;|+|'|%".Split('|');
 
         /// <summary>
         /// 判断一条sql语句有没有注入风险
@@ -27,34 +23,11 @@ namespace AgentDemo.Logic
         /// <returns>有风险返回true，反之返回false</returns>
         public static bool IsInject(string sqlCommand)
         {
-            #region
-            // 黑名单
-            static bool UseBlackList(string userInput)
-            {
-                foreach (string keyword in RuleLists.sqlInjectBlackStringList)
-                {
-                    if (userInput.IndexOf(keyword) != -1)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            // token
-            static bool UseToken(string userInput)
-            {
-                var tokenString = from subString in userInput.Split(RuleLists.sqlTokenList)
-                                  where subString.Length > 0
-                                  select subString;
-                return tokenString.ToArray().Length > 1;
-            }
-            #endregion
-
             var userInputStartIndex = sqlCommand.IndexOf("=");
             if (userInputStartIndex == -1) return false;
-            var userInput = sqlCommand.Substring(userInputStartIndex + 1);
-            return UseBlackList(userInput) || UseToken(userInput);
+            var userInput = sqlCommand.Substring(userInputStartIndex + 1).ToLower();
+            var tokenString = userInput.Split(sqlCommandKeywordList, StringSplitOptions.RemoveEmptyEntries);
+            return tokenString.Length > 1;
         }
-        
     }
 }
