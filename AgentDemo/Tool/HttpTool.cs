@@ -14,6 +14,7 @@ namespace AgentDemo
     {
         public partial class Http
         {
+
             /// <summary>
             /// 获取请求的完整url
             /// </summary>
@@ -30,6 +31,7 @@ namespace AgentDemo
                     .Append(request.QueryString)
                     .ToString();
             }
+
         }
     }
 }

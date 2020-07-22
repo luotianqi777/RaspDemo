@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
 
 [assembly: HostingStartup(typeof(XHostingStartup))]
 namespace AgentDemo.Startup
@@ -23,12 +24,14 @@ namespace AgentDemo.Startup
             });
             builder.ConfigureServices((service) =>
             {
+                service.AddHttpContextAccessor();
                 service.AddHostedService<PatchStartupService>();
                 service.AddTransient<IStartupFilter, HttpStartupFilter>();
             });
         }
     }
 
+    #region
     /// <summary>
     /// 服务启动后的服务
     /// </summary>
@@ -46,6 +49,7 @@ namespace AgentDemo.Startup
             }
         }
     }
+    #endregion
 
     /// <summary>
     /// 中间件注册服务
@@ -60,7 +64,7 @@ namespace AgentDemo.Startup
                 {
                     return async context =>
                     {
-                        Debuger.WriteLine(Tool.Http.GetUrl(context.Request));
+                        // Debuger.WriteLine(Tool.Http.GetUrl(context.Request));
                         await next(context);
                     };
                 });

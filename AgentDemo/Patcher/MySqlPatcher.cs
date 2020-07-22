@@ -1,4 +1,5 @@
 ﻿using AgentDemo.Logic;
+using Microsoft.AspNetCore.Http;
 using System;
 
 namespace AgentDemo.Patcher
@@ -15,10 +16,8 @@ namespace AgentDemo.Patcher
                 Type type = MyPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
                 Debuger.WriteLine(sqlCommand);
-                if (SqlLogic.IsInject(sqlCommand))
-                {
-                    Debuger.WriteLine("有注入风险");
-                }
+                CheckLogic.SQL.Check(sqlCommand);
+                Debuger.WriteLine(Tool.Http.GetUrl(new HttpContextAccessor().HttpContext.Request));
                 return true;
             }
         }
