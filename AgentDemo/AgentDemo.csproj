@@ -11,6 +11,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Page%28can%27t use%29\ErrorPage.html" />
+    <None Remove="Page%28can%27t use%29\Stylesheet.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Page%28can%27t use%29\ErrorPage.html">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Page%28can%27t use%29\Stylesheet.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="MySql.Data" Version="8.0.21" />
   </ItemGroup>

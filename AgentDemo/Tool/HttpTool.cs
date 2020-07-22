@@ -15,6 +15,16 @@ namespace AgentDemo
         public partial class Http
         {
 
+            public static HttpContext GetCurrentHttpContext()
+            {
+                return new HttpContextAccessor().HttpContext;
+            }
+
+            public static string GetCurrentUrl()
+            {
+                return GetUrl(GetCurrentHttpContext().Request);
+            }
+
             /// <summary>
             /// 获取请求的完整url
             /// </summary>

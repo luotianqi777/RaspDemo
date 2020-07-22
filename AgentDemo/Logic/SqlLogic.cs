@@ -3,8 +3,10 @@
 * 创 建 者：Luo Tian Qi
 * 创建日期：2020/7/21 9:16:11
 * ==============================================================================*/
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -40,7 +42,7 @@ namespace AgentDemo.Logic
             {
                 if (IsInject(sqlCommand))
                 {
-                    Debuger.WriteLine("有注入风险");
+                    Tool.Http.GetCurrentHttpContext().Response.Redirect("/");
                 }
             }
 

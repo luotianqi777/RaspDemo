@@ -64,7 +64,7 @@ namespace AgentDemo.Startup
                 {
                     return async context =>
                     {
-                        // Debuger.WriteLine(Tool.Http.GetUrl(context.Request));
+                        Debuger.WriteLine("middleware id:"+context.TraceIdentifier);
                         await next(context);
                     };
                 });

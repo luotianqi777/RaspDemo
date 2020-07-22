@@ -25,14 +25,14 @@ namespace RaspDemo
             // ÒÀÀµ using Microsoft.AspNetCore.Http
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+              //  app.UseDeveloperExceptionPage();
             }
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("test/{id}", async context =>
+                endpoints.MapGet("sql/{id}", async context =>
                  {
                      var id = context.Request.RouteValues["id"];
                      string result = MySqlManger.ExecQuery(id.ToString());

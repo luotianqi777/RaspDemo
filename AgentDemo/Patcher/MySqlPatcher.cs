@@ -15,9 +15,10 @@ namespace AgentDemo.Patcher
             {
                 Type type = MyPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
+                Debuger.WriteLine(Tool.Http.GetCurrentUrl());
+                Debuger.WriteLine("mysql hook id:"+Tool.Http.GetCurrentHttpContext().TraceIdentifier);
                 Debuger.WriteLine(sqlCommand);
                 CheckLogic.SQL.Check(sqlCommand);
-                Debuger.WriteLine(Tool.Http.GetUrl(new HttpContextAccessor().HttpContext.Request));
                 return true;
             }
         }
