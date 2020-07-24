@@ -3,6 +3,14 @@ using System;
 
 namespace AgentDemo.Json
 {
+    public abstract class XJsonBase
+    {
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+    }
+
     public class XJsonData:XJsonBase
     {
         [JsonProperty("id")]

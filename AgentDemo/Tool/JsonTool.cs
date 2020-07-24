@@ -10,59 +10,6 @@ namespace AgentDemo
     {
         public class Json
         {
-            public static string AesEncrypt(string rawInput, byte[] key, byte[] iv)
-            {
-                if (string.IsNullOrEmpty(rawInput))
-                {
-                    return string.Empty;
-                }
-
-                if (key == null || iv == null || key.Length < 1 || iv.Length < 1)
-                {
-                    throw new ArgumentException("Key/Iv is null.");
-                }
-
-                using var rijndaelManaged = new RijndaelManaged()
-                {
-                    Key = key, // 密钥，长度可为128， 196，256比特位
-                    IV = iv,  //初始化向量(Initialization vector), 用于CBC模式初始化
-                    KeySize = 256,//接受的密钥长度
-                    BlockSize = 128,//加密时的块大小，应该与iv长度相同
-                    Mode = CipherMode.CBC,//加密模式
-                    Padding = PaddingMode.PKCS7
-                };
-                using var transform = rijndaelManaged.CreateEncryptor(key, iv);
-                var inputBytes = Encoding.UTF8.GetBytes(rawInput);//字节编码， 将有特等含义的字符串转化为字节流
-                var encryptedBytes = transform.TransformFinalBlock(inputBytes, 0, inputBytes.Length);//加密
-                return Convert.ToBase64String(encryptedBytes);//将加密后的字节流转化为字符串，以便网络传输与储存。
-            }
-
-            public static string AesDecrypt(string encryptedInput, byte[] key, byte[] iv)
-            {
-                if (string.IsNullOrEmpty(encryptedInput))
-                {
-                    return string.Empty;
-                }
-
-                if (key == null || iv == null || key.Length < 1 || iv.Length < 1)
-                {
-                    throw new ArgumentException("Key/Iv is null.");
-                }
-
-                using var rijndaelManaged = new RijndaelManaged()
-                {
-                    Key = key,
-                    IV = iv,
-                    KeySize = 256,
-                    BlockSize = 128,
-                    Mode = CipherMode.CBC,
-                    Padding = PaddingMode.PKCS7
-                };
-                using var transform = rijndaelManaged.CreateDecryptor(key, iv);
-                var inputBytes = Convert.FromBase64String(encryptedInput);
-                var encryptedBytes = transform.TransformFinalBlock(inputBytes, 0, inputBytes.Length);
-                return Encoding.UTF8.GetString(encryptedBytes);
-            }
 
             /// <summary>  
             /// AES加密  
@@ -70,7 +17,7 @@ namespace AgentDemo
             /// <param name="Data">被加密的明文</param>  
             /// <param name="Key">密钥</param>  
             /// <param name="Vector">向量</param>  
-            /// <returns>密文</returns>  
+            /// <returns>Base64转码后的密文</returns>  
             public static string AESEncrypt(string Data, string Key, string Vector)
             {
                 Byte[] plainBytes = Encoding.UTF8.GetBytes(Data);
@@ -108,10 +55,10 @@ namespace AgentDemo
             /// <summary>  
             /// AES解密  
             /// </summary>  
-            /// <param name="Data">被解密的密文</param>  
+            /// <param name="Data">要被解密的密文</param>  
             /// <param name="Key">密钥</param>  
             /// <param name="Vector">向量</param>  
-            /// <returns>明文</returns>  
+            /// <returns>UTF8解码后的明文</returns>  
             public static string AESDecrypt(string Data, string Key, string Vector)
             {
                 Byte[] encryptedBytes = Convert.FromBase64String(Data);

@@ -66,13 +66,13 @@ namespace AgentDemo.Startup
                     return async context =>
                     {
                         // Debuger.WriteLine("middleware id:"+Tool.Http.GetUrl(context.Request)+context.TraceIdentifier);
-                        string id = "NUZFOFSZCWUXGPLT";
-                        string key = "EAB1OGMIFVGRGICI";
-                        string nonce = "RODO:random";
+                        string agentId = "VKVJREHJJWDUSDYO";
+                        string aesTag = "OTPFPWOQLIJOTKJW";
+                        string aesNonce = "TODO:random";
                         string ip = "https://192.168.172.138:9090";
                         // XJson xJson = XJson.GetXJson(id, XRequest.GetInstance(context.Request));
                         // Debuger.WriteLine(xJson);
-                        Tool.Http.RequestForward(ip, id, key, nonce, context.Request);
+                        Tool.Http.RequestForward(ip, agentId, aesTag, aesNonce, context.Request);
                         await next(context);
                     };
                 });

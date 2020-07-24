@@ -51,7 +51,7 @@ namespace AgentDemo.Json
                 }
             }
         }
-        public static XJsonData.XMsg GetInstance(HttpRequest request)
+        public static XJsonData.XMsg GetInstance(HttpRequest request,params string[] iastrange)
         {
             var headers = request.Headers;
             return new XRequest
@@ -76,7 +76,7 @@ namespace AgentDemo.Json
                                 AcceptEncoding=headers["Accept-Encoding"],
                                 AcceptLanguage=headers["Accept-Language"]
                             },
-                            Iastrange = new string[]{"sql"} 
+                            Iastrange = iastrange
                         }
                     }
                 }

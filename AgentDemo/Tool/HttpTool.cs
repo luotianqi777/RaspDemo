@@ -42,18 +42,33 @@ namespace AgentDemo
                     .ToString();
             }
 
-            public static async void RequestForward(string targetIp, string agentID,string key,string nonce, HttpRequest request)
+            /// <summary>
+            /// 请求转发
+            /// </summary>
+            /// <param name="requestUrl">发送目标的url</param>
+            /// <param name="agentID">插件ID</param>
+            /// <param name="aesTag">aes加密Tag</param>
+            /// <param name="aesNonce">aes加密nonce</param>
+            /// <param name="request">要转发的request</param>
+            public static async void RequestForward(string requestUrl, string agentID,string aesTag,string aesNonce, HttpRequest request)
             {
-                var datajson = XJsonData.GetXJson(agentID, XRequest.GetInstance(request));
-                var encodeJson = Json.AESEncrypt(datajson.ToString(), key,nonce);
-                Debuger.WriteLine(datajson);
-                var httpContent = new StringContent(encodeJson, Encoding.UTF8, "application/json");
+                var datajson = XJsonData.GetXJson(agentID, XRequest.GetInstance(request, "sql"));
+                var encodeJson = Json.AESEncrypt(datajson.ToString(), aesTag,aesNonce);
+                XAesResult result = new XAesResult
+                {
+                    Id = agentID,
+                    Aes = encodeJson,
+                    AesTag = Json.StrToBase64(aesTag),
+                    AesNonce = Json.StrToBase64(aesNonce)
+                };
+                Debuger.WriteLine("信息已发送");
+                var httpContent = new StringContent(result.ToString(), Encoding.UTF8, "application/json");
                 using var httpClient = new HttpClient();
-                var httpResponse = await httpClient.PostAsync(targetIp, httpContent);
+                var httpResponse = await httpClient.PostAsync(requestUrl, httpContent);
                 if (httpResponse.Content != null)
                 {
                     var responseContent = await httpResponse.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+                    Debuger.WriteLine(responseContent);
                     // From here on you could deserialize the ResponseContent back again to a concrete C# type using Json.Net
                 }
             }
