@@ -1,15 +1,4 @@
-﻿/* ==============================================================================
-* 功能描述：Sql  
-* 创 建 者：Luo Tian Qi
-* 创建日期：2020/7/21 9:16:11
-* ==============================================================================*/
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System;
 
 namespace AgentDemo.Logic
 {
@@ -17,7 +6,7 @@ namespace AgentDemo.Logic
     {
         public static class SQL
         {
-            // 规则列表
+            // sql关键字列表
             public static readonly string[] sqlCommandKeywordList = "and|exec|insert|select|drop|grant|alter|delete|update|count|chr|mid|master|truncate|char|declare|or|*|;|+|'|%".Split('|');
 
             /// <summary>
@@ -42,6 +31,7 @@ namespace AgentDemo.Logic
             {
                 if (IsInject(sqlCommand))
                 {
+                    Debuger.WriteLine("有注入风险");
                     Tool.Http.GetCurrentHttpContext().Response.Redirect("/");
                 }
             }

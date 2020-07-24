@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
+using AgentDemo.Json;
 
 [assembly: HostingStartup(typeof(XHostingStartup))]
 namespace AgentDemo.Startup
@@ -64,7 +65,14 @@ namespace AgentDemo.Startup
                 {
                     return async context =>
                     {
-                        Debuger.WriteLine("middleware id:"+context.TraceIdentifier);
+                        // Debuger.WriteLine("middleware id:"+Tool.Http.GetUrl(context.Request)+context.TraceIdentifier);
+                        string id = "NUZFOFSZCWUXGPLT";
+                        string key = "EAB1OGMIFVGRGICI";
+                        string nonce = "RODO:random";
+                        string ip = "https://192.168.172.138:9090";
+                        // XJson xJson = XJson.GetXJson(id, XRequest.GetInstance(context.Request));
+                        // Debuger.WriteLine(xJson);
+                        Tool.Http.RequestForward(ip, id, key, nonce, context.Request);
                         await next(context);
                     };
                 });

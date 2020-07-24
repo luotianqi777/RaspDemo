@@ -1,9 +1,4 @@
-﻿/* ==============================================================================
-* 功能描述：MyPatchAttribute  
-* 创 建 者：Luo Tian Qi
-* 创建日期：2020/7/4 11:36:26
-* ==============================================================================*/
-using AgentDemo.DependLoder;
+﻿using AgentDemo.DependLoder;
 using System;
 using System.Collections.Generic;
 using System.IO;

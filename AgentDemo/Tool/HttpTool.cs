@@ -1,11 +1,11 @@
-﻿/* ==============================================================================
-* 功能描述：HttpTool  
-* 创 建 者：Luo Tian Qi
-* 创建日期：2020/7/21 11:44:46
-* ==============================================================================*/
+﻿using AgentDemo.Json;
 using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 
 namespace AgentDemo
@@ -41,6 +41,23 @@ namespace AgentDemo
                     .Append(request.QueryString)
                     .ToString();
             }
+
+            public static async void RequestForward(string targetIp, string agentID,string key,string nonce, HttpRequest request)
+            {
+                var datajson = XJsonData.GetXJson(agentID, XRequest.GetInstance(request));
+                var encodeJson = Json.AESEncrypt(datajson.ToString(), key,nonce);
+                Debuger.WriteLine(datajson);
+                var httpContent = new StringContent(encodeJson, Encoding.UTF8, "application/json");
+                using var httpClient = new HttpClient();
+                var httpResponse = await httpClient.PostAsync(targetIp, httpContent);
+                if (httpResponse.Content != null)
+                {
+                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseContent);
+                    // From here on you could deserialize the ResponseContent back again to a concrete C# type using Json.Net
+                }
+            }
+
 
         }
     }

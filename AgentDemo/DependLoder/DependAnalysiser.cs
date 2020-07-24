@@ -1,15 +1,6 @@
-﻿/* ==============================================================================
-* 功能描述：分析项目中的依赖
-* 创 建 者：Luo Tian Qi
-* 创建日期：2020/7/3 15:18:48
-* ==============================================================================*/
-using Google.Protobuf.WellKnownTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 /// <summary>

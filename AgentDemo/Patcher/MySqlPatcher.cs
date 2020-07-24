@@ -15,10 +15,10 @@ namespace AgentDemo.Patcher
             {
                 Type type = MyPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
-                Debuger.WriteLine(Tool.Http.GetCurrentUrl());
-                Debuger.WriteLine("mysql hook id:"+Tool.Http.GetCurrentHttpContext().TraceIdentifier);
-                Debuger.WriteLine(sqlCommand);
                 CheckLogic.SQL.Check(sqlCommand);
+
+                // var context = Tool.Http.GetCurrentHttpContext();
+                // Debuger.WriteLine("middleware id:" + Tool.Http.GetUrl(context.Request) + context.TraceIdentifier + " " + sqlCommand);
                 return true;
             }
         }
