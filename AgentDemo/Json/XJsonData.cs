@@ -22,7 +22,7 @@ namespace AgentDemo.Json
 
         public abstract class XMsg:XJsonBase { }
 
-        public static XJsonData GetXJson(string id, XMsg msg)
+        public static XJsonData GetXJsonData(string id, XMsg msg)
         {
             return new XJsonData
             {

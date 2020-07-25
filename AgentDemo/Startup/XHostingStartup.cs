@@ -14,6 +14,7 @@ using AgentDemo.Json;
 namespace AgentDemo.Startup
 {
 
+    #region HostingStartup
     public class XHostingStartup : IHostingStartup
     {
         // 服务启动前的服务
@@ -31,8 +32,9 @@ namespace AgentDemo.Startup
             });
         }
     }
+    #endregion
 
-    #region
+    #region BackgroundService
     /// <summary>
     /// 服务启动后的服务
     /// </summary>
@@ -52,6 +54,7 @@ namespace AgentDemo.Startup
     }
     #endregion
 
+    #region StartupFilter
     /// <summary>
     /// 中间件注册服务
     /// </summary>
@@ -65,14 +68,13 @@ namespace AgentDemo.Startup
                 {
                     return async context =>
                     {
-                        // Debuger.WriteLine("middleware id:"+Tool.Http.GetUrl(context.Request)+context.TraceIdentifier);
-                        string agentId = "VKVJREHJJWDUSDYO";
-                        string aesTag = "OTPFPWOQLIJOTKJW";
-                        string aesNonce = "TODO:random";
-                        string ip = "https://192.168.172.138:9090";
-                        // XJson xJson = XJson.GetXJson(id, XRequest.GetInstance(context.Request));
-                        // Debuger.WriteLine(xJson);
-                        Tool.Http.RequestForward(ip, agentId, aesTag, aesNonce, context.Request);
+                        // http://192.168.172.239:9090/
+                        string ip = "192.168.172.239";
+                        int port = 9090;
+                        string agentId = "1UB11YMBATNOZFBH";
+                        string aesTag = "LATNLOFPVVDGAEVG";
+                        string aesNonce = "1234567890";
+                        Tool.Http.RequestForwardAsync(context.Request, ip, port, agentId, aesTag, aesNonce);
                         await next(context);
                     };
                 });
@@ -80,5 +82,6 @@ namespace AgentDemo.Startup
             };
         }
     }
+    #endregion
 
 }
