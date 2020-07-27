@@ -32,7 +32,7 @@ namespace AgentDemo.Logic
                 if (IsInject(sqlCommand))
                 {
                     Debuger.WriteLine("有注入风险");
-                    Tool.Http.GetCurrentHttpContext().Response.Redirect("/");
+                    Tool.XHttpHelper.GetCurrentHttpContext().Response.Redirect("/");
                 }
             }
 

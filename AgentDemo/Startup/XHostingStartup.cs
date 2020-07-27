@@ -68,13 +68,16 @@ namespace AgentDemo.Startup
                 {
                     return async context =>
                     {
-                        // http://192.168.172.239:9090/
-                        string ip = "192.168.172.239";
-                        int port = 9090;
-                        string agentId = "1UB11YMBATNOZFBH";
-                        string aesTag = "LATNLOFPVVDGAEVG";
-                        string aesNonce = "1234567890";
-                        Tool.Http.RequestForwardAsync(context.Request, ip, port, agentId, aesTag, aesNonce);
+                        var agentConfig = new AgentConfig()
+                        {
+                            IP = "192.168.172.239",
+                            Port = 9090,
+                            TimeOut = 5*1000,
+                            AgentID = "1UB11YMBATNOZFBH",
+                            AesKey = "LATNLOFPVVDGAEVG",
+                        };
+                        Debuger.WriteLine($"当前url：{Tool.XHttpHelper.GetUrl(context.Request)}");
+                        Tool.XHttpHelper.RequestForwardAsync(agentConfig, context.Request, "sql");
                         await next(context);
                     };
                 });

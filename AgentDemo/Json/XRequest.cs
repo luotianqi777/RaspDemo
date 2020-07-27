@@ -53,6 +53,10 @@ namespace AgentDemo.Json
         }
         public static XJsonData.XMsg GetInstance(HttpRequest request,params string[] iastrange)
         {
+            if (iastrange.Length == 0)
+            {
+                Debuger.WriteLine("警告：iastrange的个数为零");
+            }
             var headers = request.Headers;
             return new XRequest
             {
@@ -62,7 +66,7 @@ namespace AgentDemo.Json
                     Urls = new XResult.XUrls[]{
                         new XResult.XUrls {
                             Method = request.Method,
-                            Url=Tool.Http.GetUrl(request),
+                            Url=Tool.XHttpHelper.GetUrl(request),
                             Data = "",
                             Headers = new XResult.XUrls.XHeaders
                             {

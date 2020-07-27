@@ -12,15 +12,20 @@ namespace AgentDemo.Patcher
     /// </summary>
     public abstract class BasePatcher
     {
+        public static bool IsDebug { get => false; }
+
         public static void PatchAll()
         {
             Harmony harmony = new Harmony(nameof(BasePatcher));
             harmony.UnpatchAll();
             harmony.PatchAll();
-            Debuger.WriteLine("Patch all method!\nmethod list:");
-            foreach (var value in harmony.GetPatchedMethods())
+            if (IsDebug)
             {
-                Debuger.WriteLine("-\t" + value.Name);
+                Debuger.WriteLine("Patch all method!\nmethod list:");
+                foreach (var value in harmony.GetPatchedMethods())
+                {
+                    Debuger.WriteLine("-\t" + value.Name);
+                }
             }
         }
 
