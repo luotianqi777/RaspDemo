@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace AgentDemo
 {
-    public partial class Tool
+    public static partial class Tool
     {
-        public partial class XHttpHelper
+        public class XHttpHelper
         {
 
             #region GetUrl
@@ -53,23 +53,23 @@ namespace AgentDemo
             /// 把请求包装成Json信息并转发
             /// </summary>
             /// <param name="agentConfig">插件配置信息</param>
-            /// <param name="srcRequest">转发的请求</param>
+            /// <param name="request">转发的请求</param>
             /// <param name="iastrange">检测标签</param>
-            public static async void RequestForwardAsync(AgentConfig agentConfig,HttpRequest srcRequest,params string[] iastrange)
+            public static async void RequestForwardAsync(AgentConfig agentConfig,HttpRequest request,params string[] iastrange)
             {
                 // 包装请求
-                var datajson = XJsonData.GetXJsonData(agentConfig.AgentID, XRequest.GetInstance(srcRequest, iastrange));
-                var encodeJson = XTypeConverter.AESEncrypt(datajson.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
+                var datajson = XJsonData.GetXJsonData(agentConfig.AgentID, XRequest.GetInstance(request, iastrange));
+                var encryptedJson = XTypeConverter.AESEncrypt(datajson.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
                 XAesResult result = new XAesResult
                 {
                     Id = agentConfig.AgentID,
-                    Aes = XTypeConverter.StrToBase64(encodeJson),
+                    Aes =encryptedJson,
                     AesTag = XTypeConverter.StrToBase64(agentConfig.AesTag),
                     AesNonce = XTypeConverter.StrToBase64(agentConfig.AesNonce)
                 };
                 Debuger.WriteLine(result);
                 // 发送信息
-                var response = await SendRequestAsync(agentConfig.IP, agentConfig.Port, agentConfig.TimeOut, result.ToString());
+                var response = await SendRequestAsync(result.ToString(), agentConfig);
                 Debuger.WriteLine($"回复内容：{response}");
             }
             #endregion
@@ -78,17 +78,19 @@ namespace AgentDemo
             /// <summary>
             /// 发送请求
             /// </summary>
-            /// <param name="ip">ip</param>
-            /// <param name="port">端口</param>
-            /// <param name="timeOut">超时上限</param>
-            /// <param name="jsonMessage">发送的Json消息</param>
-            /// <returns>接收到的响应</returns>
-            public static async Task<string> SendRequestAsync(string ip, int port, int timeOut, string jsonMessage)
+            /// <param name="message">要发送的信息</param>
+            /// <param name="agentConfig">agent配置信息</param>
+            /// <returns>服务器响应内容</returns>
+            public static async Task<string> SendRequestAsync(string message, AgentConfig agentConfig)
             {
+                string ip = agentConfig.IP;
+                int port = agentConfig.Port;
+                int timeOut = agentConfig.TimeOut;
+
                 // 创建socket
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
                 {
-                    SendTimeout = timeOut,
+                    SendTimeout =  timeOut,
                     ReceiveTimeout = timeOut
                 };
 
@@ -105,7 +107,7 @@ namespace AgentDemo
                 }
 
                 // 发送请求
-                string sendData = XTypeConverter.StrToBase64(jsonMessage);
+                string sendData = XTypeConverter.StrToBase64(message);
                 byte[] sendDataByte = Encoding.UTF8.GetBytes(sendData);
                 byte[] sizeByte = XTypeConverter.IntToByte(sendDataByte.Length);
                 int sendSize = await socket.SendAsync(sizeByte.Concat(sendDataByte).ToArray(), SocketFlags.None);

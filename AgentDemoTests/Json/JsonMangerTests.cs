@@ -18,7 +18,12 @@ namespace AgentDemo.Json.Tests
         [TestMethod()]
         public void SendJsonTest()
         {
-            // var url = "http://192.168.172.239:9090";
+            string message = "test_123_ABC";
+            string key = "LATNLOFPVVDGAEVG";
+            var encryptMessage = Tool.XTypeConverter.AESEncrypt(message,key,out string tag, out string nonce);
+            var str = Tool.XTypeConverter.AESDecrypt(encryptMessage, key, tag, nonce);
+            Console.WriteLine(str);
+            Assert.AreEqual(str, message);
         }
     }
 }

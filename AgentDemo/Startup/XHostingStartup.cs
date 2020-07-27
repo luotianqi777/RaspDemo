@@ -72,7 +72,7 @@ namespace AgentDemo.Startup
                         {
                             IP = "192.168.172.239",
                             Port = 9090,
-                            TimeOut = 5*1000,
+                            TimeOut = 10*1000,
                             AgentID = "1UB11YMBATNOZFBH",
                             AesKey = "LATNLOFPVVDGAEVG",
                         };
