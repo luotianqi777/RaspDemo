@@ -334,7 +334,6 @@ namespace HarmonyLib
 				codeInstruction.labels.Do(label => emitter.MarkLabel(label));
 
 				// start all exception blocks
-				// TODO: we ignore the resulting label because we have no way to use it
 				//
 				codeInstruction.blocks.Do(block =>
 				{

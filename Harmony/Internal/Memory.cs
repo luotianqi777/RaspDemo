@@ -12,7 +12,6 @@ namespace HarmonyLib
 		/// <param name="method">The method/constructor to change</param>
 		unsafe public static void MarkForNoInlining(MethodBase method)
 		{
-			// TODO for now, this only works on mono
 			if (AccessTools.IsMonoRuntime)
 			{
 				var iflags = (ushort*)(method.MethodHandle.Value) + 1;

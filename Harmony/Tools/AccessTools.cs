@@ -1081,7 +1081,6 @@ namespace HarmonyLib
 					return addableResult;
 				}
 
-				// TODO: add dictionaries support
 				// maybe use methods in Dictionary<KeyValuePair<TKey,TVal>>
 			}
 

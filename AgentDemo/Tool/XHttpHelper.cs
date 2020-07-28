@@ -48,33 +48,29 @@ namespace AgentDemo
             }
             #endregion
 
-            #region RequestForward
+            #region SendRequestAsync
+
             /// <summary>
-            /// 把请求包装成Json信息并转发
+            /// 将jsonData加密
             /// </summary>
-            /// <param name="agentConfig">插件配置信息</param>
-            /// <param name="request">转发的请求</param>
-            /// <param name="iastrange">检测标签</param>
-            public static async void RequestForwardAsync(AgentConfig agentConfig,HttpRequest request,params string[] iastrange)
+            /// <param name="jsonData">要发送的json数据</param>
+            /// <param name="agentConfig">Agent配置信息</param>
+            /// <returns>加密后的信息</returns>
+            public static string EncryptJson(XJsonData jsonData, AgentConfig agentConfig)
             {
-                // 包装请求
-                var datajson = XJsonData.GetXJsonData(agentConfig.AgentID, XRequest.GetInstance(request, iastrange));
-                var encryptedJson = XTypeConverter.AESEncrypt(datajson.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
+                // Aes-Gcm加密
+                var encryptedJson = XTypeConverter.AESEncrypt(jsonData.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
+                // 封装成json
                 XAesResult result = new XAesResult
                 {
                     Id = agentConfig.AgentID,
-                    Aes =encryptedJson,
-                    AesTag = XTypeConverter.StrToBase64(agentConfig.AesTag),
-                    AesNonce = XTypeConverter.StrToBase64(agentConfig.AesNonce)
+                    Aes = encryptedJson,
+                    AesTag = agentConfig.AesTag,
+                    AesNonce = agentConfig.AesNonce
                 };
-                Debuger.WriteLine(result);
-                // 发送信息
-                var response = await SendRequestAsync(result.ToString(), agentConfig);
-                Debuger.WriteLine($"回复内容：{response}");
+                return result.ToString();
             }
-            #endregion
 
-            #region SendRequest
             /// <summary>
             /// 发送请求
             /// </summary>
@@ -98,32 +94,47 @@ namespace AgentDemo
                 try
                 {
                     socket.Connect(ip, port);
-                    Debuger.WriteLine($"URL: {ip}:{port}");
+                    Debuger.WriteLine(agentConfig.DEBUG,$"URL: {ip}:{port}");
                 }
                 catch (Exception e)
                 {
-                    Debuger.WriteLine($"连接失败，错误信息：{e.Message}");
+                    Debuger.WriteLine(agentConfig.DEBUG,$"连接失败，错误信息：{e.Message}");
                     return string.Empty;
                 }
 
                 // 发送请求
-                string sendData = XTypeConverter.StrToBase64(message);
-                byte[] sendDataByte = Encoding.UTF8.GetBytes(sendData);
-                byte[] sizeByte = XTypeConverter.IntToByte(sendDataByte.Length);
-                int sendSize = await socket.SendAsync(sizeByte.Concat(sendDataByte).ToArray(), SocketFlags.None);
-                Debuger.WriteLine($"请求已转发，数据长度：{sendDataByte.Length}，发送长度：{sendSize}");
+                byte[] sendDataByte = Encoding.UTF8.GetBytes(message);
+                byte[] snedDataSizeByte = XTypeConverter.IntToByte(sendDataByte.Length);
+                int sendSize = await socket.SendAsync(snedDataSizeByte.Concat(sendDataByte).ToArray(), SocketFlags.None);
+                Debuger.WriteLine(agentConfig.DEBUG,$"请求已发送，数据长度：{sendDataByte.Length}，发送长度：{sendSize}");
 
                 // 接收响应
                 byte[] dataArray = new byte[1024];
                 StringBuilder response = new StringBuilder();
                 while(await socket.ReceiveAsync(dataArray, SocketFlags.None)!=0)
                 {
-                    response.Append(Encoding.UTF8.GetString(dataArray));
+                    response.Append(Convert.ToBase64String(dataArray));
                 }
+                socket.Close();
                 Debuger.WriteLine($"回复已接收，数据长度：{response.Length}");
-                return response.ToString();
+                return Encoding.UTF8.GetString(Convert.FromBase64String(response.ToString()));
             }
+
             #endregion
+
+            public static async Task<string> SendRequest(AgentConfig agentConfig, HttpRequest request, params string[] iastrange)
+            {
+                XJsonData jsonData = XJsonData.GetXJsonData(agentConfig.AgentID, XRequest.GetInstance(request, iastrange));
+                var message = EncryptJson(jsonData, agentConfig);
+                return await SendRequestAsync(message, agentConfig);
+            }
+
+            public static async Task<string> SendDoki(AgentConfig agentConfig)
+            {
+                XJsonData jsonData = XJsonData.GetXJsonData(agentConfig.AgentID, XDoki.GetInstance(agentConfig.LocalIP));
+                var message = EncryptJson(jsonData, agentConfig);
+                return await SendRequestAsync(message, agentConfig);
+            }
 
         }
     }

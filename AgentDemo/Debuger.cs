@@ -11,7 +11,11 @@ namespace AgentDemo
         {
             FileLog.Log(message.ToString());
             Console.WriteLine(message);
-            // System.Diagnostics.Debug.WriteLine(message);
         }
+        public static void WriteLine(bool isShow, object message)
+        {
+            if (isShow) { WriteLine(message); }
+        }
+
     }
 }

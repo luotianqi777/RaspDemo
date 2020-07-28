@@ -13,11 +13,11 @@ namespace AgentDemo.Patcher
     /// 派生自HarmontPatch
     /// 可以更方便的处理依赖
     /// </summary>
-    public class MyPatchAttribute : HarmonyPatch
+    public class XPatchAttribute : HarmonyPatch
     {
         public string FullClassName { get; }
 
-        public MyPatchAttribute(string packageName,
+        public XPatchAttribute(string packageName,
                                 string className,
                                 string methodName,
                                 Type[] types)
@@ -67,7 +67,7 @@ namespace AgentDemo.Patcher
         /// <returns>Patch的Class类型</returns>
         public static Type GetPatchedClassType<T>() where T : BasePatcher
         {
-            MyPatchAttribute attribute = (MyPatchAttribute)GetCustomAttribute(typeof(T), typeof(MyPatchAttribute));
+            XPatchAttribute attribute = (XPatchAttribute)GetCustomAttribute(typeof(T), typeof(XPatchAttribute));
             return attribute.info.declaringType;
         }
 

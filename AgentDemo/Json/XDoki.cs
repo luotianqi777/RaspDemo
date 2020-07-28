@@ -27,21 +27,21 @@ namespace AgentDemo.Json
             public string ServerVersion { get; set; }
         }
 
-        public XJsonData.XMsg GetInstance()
+        public static XJsonData.XMsg GetInstance(string ip)
         {
             return new XDoki
             {
-                ClientInfo = new XDoki.XClientInfo
+                ClientInfo = new XClientInfo
                 {
                     VersionPocs = 0,
-                    VersionMain = 3000201,
-                    Ip = "",
-                    Language = "csharp",
-                    LanguageVersion = ".net core 3.1",
-                    Server = "none",
-                    ServerVersion = "none"
+                    VersionMain = 3010015,
+                    Ip = ip,
+                    Language = "java",
+                    LanguageVersion = "1.8.131",
+                    Server = "Tomcat",
+                    ServerVersion = "8.5.5"
                 },
-
+                Cmd = 9001
             };
         }
     }

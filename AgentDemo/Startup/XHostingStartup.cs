@@ -64,23 +64,7 @@ namespace AgentDemo.Startup
         {
             return app =>
             {
-                app.Use(next =>
-                {
-                    return async context =>
-                    {
-                        var agentConfig = new AgentConfig()
-                        {
-                            IP = "192.168.172.239",
-                            Port = 9090,
-                            TimeOut = 10*1000,
-                            AgentID = "1UB11YMBATNOZFBH",
-                            AesKey = "LATNLOFPVVDGAEVG",
-                        };
-                        Debuger.WriteLine($"当前url：{Tool.XHttpHelper.GetUrl(context.Request)}");
-                        Tool.XHttpHelper.RequestForwardAsync(agentConfig, context.Request, "sql");
-                        await next(context);
-                    };
-                });
+                app.Use(XMiddlewares.HttpMiddle);
                 next(app);
             };
         }
