@@ -5,9 +5,9 @@ using System.Text;
 
 namespace AgentDemo
 {
-    public static partial class Tool
+    public static partial class XTool
     {
-        public static class XTypeConverter
+        public static class TypeConverter
         {
             /// <summary>
             /// AESGCM加密

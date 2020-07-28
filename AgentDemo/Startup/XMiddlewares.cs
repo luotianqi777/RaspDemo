@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AgentDemo.Json;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,11 @@ namespace AgentDemo.Startup
             return async context =>
             {
                 var agentConfig = AgentConfig.GetInstance();
-                Debuger.WriteLine(agentConfig.DEBUG, $"当前url：{Tool.XHttpHelper.GetUrl(context.Request)}");
-                await Tool.XHttpHelper.SendDoki(agentConfig)
-                // await Tool.XHttpHelper.RequestForward(agentConfig, context.Request, "sql")
+                XJsonData.XMsg msg = 
+                new XDoki.Sender(agentConfig.LocalIP);
+                // new XRequest(context.Request, "sql");
+                XJsonData jsonData = new XJsonData(agentConfig.AgentID, msg);
+                await XTool.JsonSender.SendJsonData(jsonData, agentConfig)
                 .ContinueWith(action => { Debuger.WriteLine(agentConfig.DEBUG, $"响应内容：{action.Result}"); });
                 await next(context);
             };

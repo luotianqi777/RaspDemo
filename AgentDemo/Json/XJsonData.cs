@@ -9,6 +9,11 @@ namespace AgentDemo.Json
         {
             return JsonConvert.SerializeObject(this);
         }
+
+        public static T GetJson<T>(string jsonString) where T:XJsonBase
+        {
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
     }
 
     public class XJsonData:XJsonBase
@@ -22,14 +27,16 @@ namespace AgentDemo.Json
 
         public abstract class XMsg:XJsonBase { }
 
-        public static XJsonData GetXJsonData(string id, XMsg msg)
+        /// <summary>
+        /// 构造一个JsonData
+        /// </summary>
+        /// <param name="agentID">AgentID</param>
+        /// <param name="msg">要发送的json数据</param>
+        public XJsonData(string agentID, XMsg msg)
         {
-            return new XJsonData
-            {
-                Id = id,
-                TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds(),
-                Msg=msg
-            };
+            Id = agentID;
+            TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            Msg = msg;
         }
 
     }

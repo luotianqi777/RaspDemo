@@ -51,37 +51,41 @@ namespace AgentDemo.Json
                 }
             }
         }
-        public static XJsonData.XMsg GetInstance(HttpRequest request,params string[] iastrange)
+
+        /// <summary>
+        /// 获取一个请求转发Json数据
+        /// </summary>
+        /// <param name="request">要转发的请求</param>
+        /// <param name="iastrange">漏洞检测范围</param>
+        public XRequest(HttpRequest request, params string[] iastrange)
         {
             if (iastrange.Length == 0)
             {
                 Debuger.WriteLine("警告：iastrange的个数为零");
             }
             var headers = request.Headers;
-            return new XRequest
+
+            Cmd = 4001;
+            Result = new XResult
             {
-                Cmd = 4001,
-                Result = new XResult
-                {
-                    Urls = new XResult.XUrls[]{
-                        new XResult.XUrls {
-                            Method = request.Method,
-                            Url=Tool.XHttpHelper.GetUrl(request),
-                            Data = "",
-                            Headers = new XResult.XUrls.XHeaders
-                            {
-                                Cookie=headers["Cookie"],
-                                Accept=headers["Accept"],
-                                Upgrade=headers["Upgrade-Insecure-Requests"],
-                                Connection=headers["Connection"],
-                                Referer=headers["Referer"],
-                                UserAgent=headers["User-Agent"],
-                                Host=headers["Host"],
-                                AcceptEncoding=headers["Accept-Encoding"],
-                                AcceptLanguage=headers["Accept-Language"]
-                            },
-                            Iastrange = iastrange
-                        }
+                Urls = new XResult.XUrls[] {
+                    new XResult.XUrls {
+                        Method = request.Method,
+                        Url=XTool.HttpHelper.GetUrl(request),
+                        Data = "",
+                        Headers = new XResult.XUrls.XHeaders
+                        {
+                            Cookie=headers["Cookie"],
+                            Accept=headers["Accept"],
+                            Upgrade=headers["Upgrade-Insecure-Requests"],
+                            Connection=headers["Connection"],
+                            Referer=headers["Referer"],
+                            UserAgent=headers["User-Agent"],
+                            Host=headers["Host"],
+                            AcceptEncoding=headers["Accept-Encoding"],
+                            AcceptLanguage=headers["Accept-Language"]
+                        },
+                        Iastrange = iastrange
                     }
                 }
             };
