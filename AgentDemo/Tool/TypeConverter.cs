@@ -29,6 +29,7 @@ namespace AgentDemo
                     aes.Encrypt(nonceByte, textByte, encryptedByte, tagByte);
                     tag = Convert.ToBase64String(tagByte);
                     nonce = Convert.ToBase64String(nonceByte);
+                    aes.Dispose();
                     return Convert.ToBase64String(encryptedByte);
                 }
             }
@@ -50,6 +51,7 @@ namespace AgentDemo
                 using (AesGcm aes = new AesGcm(Encoding.UTF8.GetBytes(key)))
                 {
                     aes.Decrypt(nonceByte, encryptedByte, tagByte, textByte);
+                    aes.Dispose();
                     return Encoding.UTF8.GetString(textByte);
                 }
             }
