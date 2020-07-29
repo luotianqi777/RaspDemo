@@ -28,6 +28,7 @@ namespace AgentDemo.Startup
             {
                 service.AddHttpContextAccessor();
                 service.AddHostedService<PatchStartupService>();
+                service.AddHostedService<DokiStartupService>();
                 service.AddTransient<IStartupFilter, HttpStartupFilter>();
             });
         }
@@ -36,7 +37,7 @@ namespace AgentDemo.Startup
 
     #region BackgroundService
     /// <summary>
-    /// 服务启动后的服务
+    /// 注册Hook
     /// </summary>
     public class PatchStartupService : BackgroundService
     {
@@ -52,6 +53,32 @@ namespace AgentDemo.Startup
             }
         }
     }
+
+    /// <summary>
+    /// 注册心跳
+    /// </summary>
+    public class DokiStartupService : BackgroundService
+    {
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            bool isLive = true;
+            int interTime = 1000 * 10;
+            while (!stoppingToken.IsCancellationRequested && isLive)
+            {
+                await Task.Run(async () =>
+                {
+                    AgentConfig agentConfig = AgentConfig.GetInstance();
+                    XJson.Msg doki = XJson.Doki.Sender.GetInstance(agentConfig.LocalIP);
+                    XJson.JsonData jsonData = XJson.JsonData.GetInstance(agentConfig.AgentID, doki);
+                    var responcce = await XJson.SendJsonData(jsonData, agentConfig);
+                    var resultJson = XTool.TypeConverter.BytesToString(responcce, out _);
+                    Debuger.WriteLine(responcce);
+                });
+                await Task.Delay(interTime, stoppingToken);
+            }
+        }
+    }
+
     #endregion
 
     #region StartupFilter

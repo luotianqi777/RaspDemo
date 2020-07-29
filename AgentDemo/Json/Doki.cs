@@ -7,7 +7,7 @@ namespace AgentDemo.Json
         public class Doki:JsonBase
         {
             #region Sender
-            public class Sender : JsonData.XMsg
+            public class Sender : Msg
             {
                 [JsonProperty("client_info")]
                 public XClientInfo ClientInfo { get; set; }
@@ -44,14 +44,13 @@ namespace AgentDemo.Json
                     {
                         ClientInfo = new XClientInfo
                         {
-                            VersionMain = 3010016,
+                            VersionMain = 3010012,
                             VersionPocs = 0,
                             Ip = localip,
-                            Language = "Java",
-                            LanguageVersion = "1.8.0_131",
-                            Server = "Apache Tomcat",
-                            ServerVersion = "8.5.38",
-                            ReqNum = 0
+                            Language = "C#",
+                            LanguageVersion = "core 3.1",
+                            Server = "",
+                            ServerVersion = "",
                         },
                         Cmd = 9001,
                     };
@@ -60,7 +59,7 @@ namespace AgentDemo.Json
             #endregion
 
             #region Receiver
-            public class Receiver : JsonData.XMsg
+            public class Receiver : Msg
             {
                 [JsonProperty("vpn_info")]
                 public XVpnInfo VpnInfo { get; set; }

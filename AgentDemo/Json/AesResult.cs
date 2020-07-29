@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AgentDemo.Json
@@ -17,6 +18,7 @@ namespace AgentDemo.Json
             public string AesTag { get; set; }
             [JsonProperty("aesnonce")]
             public string AesNonce { get; set; }
+
         }
     }
 }

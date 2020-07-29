@@ -7,7 +7,7 @@ namespace AgentDemo.Json
 {
     public partial class XJson
     {
-        public class Request : JsonData.XMsg
+        public class Request : Msg
         {
             [JsonProperty("result")]
             public XResult Result { get; set; }
@@ -59,7 +59,7 @@ namespace AgentDemo.Json
             /// </summary>
             /// <param name="request">要转发的请求</param>
             /// <param name="iastrange">漏洞检测范围</param>
-            public Request(HttpRequest request, params string[] iastrange)
+            public static Request GetInstance(HttpRequest request, params string[] iastrange)
             {
                 if (iastrange.Length == 0)
                 {
@@ -67,29 +67,32 @@ namespace AgentDemo.Json
                 }
                 var headers = request.Headers;
 
-                Cmd = 4001;
-                Result = new XResult
+                return new Request
                 {
-                    Urls = new XResult.XUrls[] {
-                    new XResult.XUrls {
-                        Method = request.Method,
-                        Url=XTool.HttpHelper.GetUrl(request),
-                        Data = "",
-                        Headers = new XResult.XUrls.XHeaders
-                        {
-                            Cookie=headers["Cookie"],
-                            Accept=headers["Accept"],
-                            Upgrade=headers["Upgrade-Insecure-Requests"],
-                            Connection=headers["Connection"],
-                            Referer=headers["Referer"],
-                            UserAgent=headers["User-Agent"],
-                            Host=headers["Host"],
-                            AcceptEncoding=headers["Accept-Encoding"],
-                            AcceptLanguage=headers["Accept-Language"]
+                    Cmd = 4001,
+                    Result = new XResult
+                    {
+                        Urls = new XResult.XUrls[] {
+                            new XResult.XUrls {
+                                Method = request.Method,
+                                Url = XTool.HttpHelper.GetUrl(request),
+                                Data = "",
+                                Headers = new XResult.XUrls.XHeaders
+                                {
+                                    Cookie = headers["Cookie"],
+                                    Accept = headers["Accept"],
+                                    Upgrade = headers["Upgrade-Insecure-Requests"],
+                                    Connection = headers["Connection"],
+                                    Referer = headers["Referer"],
+                                    UserAgent = headers["User-Agent"],
+                                    Host = headers["Host"],
+                                    AcceptEncoding = headers["Accept-Encoding"],
+                                    AcceptLanguage = headers["Accept-Language"]
+                                },
+                                Iastrange = iastrange
+                            }
                         },
-                        Iastrange = iastrange
                     }
-                }
                 };
             }
         }
