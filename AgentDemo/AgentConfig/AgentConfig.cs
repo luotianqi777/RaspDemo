@@ -34,13 +34,10 @@ namespace AgentDemo
                 Port = 9090,
                 LocalPort = 5000,
                 IP = "192.168.172.239",
-                // TODO:
-                LocalIP = "192.168.0.102",
+                LocalIP = "192.168.172.112",
                 TimeOut = 30 * 1000,
-                // AgentID = "DMHUEHFXSQADARKH",
-                // AesKey = "WPOIVXHUZINJRDQC",
-                AgentID = "DXGVUYDRJZDKBVIL",
-                AesKey = "HLQSEIWXESXRCFGZ",
+                AgentID = "DMHUEHFXSQADARKH",
+                AesKey = "WPOIVXHUZINJRDQC",
                 DEBUG = true,
             };
         }
