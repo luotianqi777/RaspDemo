@@ -1,4 +1,7 @@
-﻿using Org.BouncyCastle.Utilities.Encoders;
+﻿using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Modes;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,19 +22,26 @@ namespace AgentDemo
             /// <returns>加密后的内容</returns>
             public static string AESEncrypt(string text, string key, out string tag, out string nonce)
             {
-                byte[] tagByte = new byte[16];
-                byte[] nonceByte = new byte[12];
+                var nonceByte = new byte[16];
                 new Random().NextBytes(nonceByte);
-                byte[] textByte = Encoding.UTF8.GetBytes(text);
-                byte[] encryptedByte = new byte[textByte.Length];
-                using (AesGcm aes = new AesGcm(Encoding.UTF8.GetBytes(key)))
+                var keyByte = Encoding.UTF8.GetBytes(key);
+                var textByte = Encoding.UTF8.GetBytes(text);
+                var cipher = new GcmBlockCipher(new AesEngine());
+                var parameters = new AeadParameters(new KeyParameter(keyByte), 128, nonceByte);
+                cipher.Init(true, parameters);
+                var cipherByte = new byte[cipher.GetOutputSize(textByte.Length)];
+                try
                 {
-                    aes.Encrypt(nonceByte, textByte, encryptedByte, tagByte);
-                    tag = Convert.ToBase64String(tagByte);
-                    nonce = Convert.ToBase64String(nonceByte);
-                    aes.Dispose();
-                    return Convert.ToBase64String(encryptedByte);
+                    var len = cipher.ProcessBytes(textByte, 0, textByte.Length, cipherByte, 0);
+                    cipher.DoFinal(cipherByte, len);
                 }
+                catch (Exception e)
+                {
+                    Debuger.WriteLine(e.Message);
+                }
+                tag = Convert.ToBase64String(cipher.GetMac());
+                nonce = Convert.ToBase64String(nonceByte);
+                return Convert.ToBase64String(cipherByte);
             }
 
             /// <summary>
