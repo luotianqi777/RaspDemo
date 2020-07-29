@@ -12,6 +12,8 @@ namespace AgentDemo
     {
         public static class TypeConverter
         {
+            public readonly static int AesTagLength = 16;
+
             /// <summary>
             /// AESGCM加密
             /// </summary>
@@ -22,10 +24,10 @@ namespace AgentDemo
             /// <returns>加密后的内容</returns>
             public static string AESEncrypt(string text, string key, out string tag, out string nonce)
             {
-                var nonceByte = new byte[16];
-                new Random().NextBytes(nonceByte);
                 var keyByte = Encoding.UTF8.GetBytes(key);
                 var textByte = Encoding.UTF8.GetBytes(text);
+                var nonceByte = new byte[16];
+                new Random().NextBytes(nonceByte);
                 var cipher = new GcmBlockCipher(new AesEngine());
                 var parameters = new AeadParameters(new KeyParameter(keyByte), 128, nonceByte);
                 cipher.Init(true, parameters);
@@ -39,9 +41,11 @@ namespace AgentDemo
                 {
                     Debuger.WriteLine(e.Message);
                 }
-                tag = Convert.ToBase64String(cipher.GetMac());
                 nonce = Convert.ToBase64String(nonceByte);
-                return Convert.ToBase64String(cipherByte);
+                tag = Convert.ToBase64String(cipher.GetMac());
+                var result = new byte[textByte.Length];
+                Array.Copy(cipherByte, result, textByte.Length);
+                return Convert.ToBase64String(result);
             }
 
             /// <summary>
