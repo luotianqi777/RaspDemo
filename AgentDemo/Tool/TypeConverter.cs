@@ -20,8 +20,10 @@ namespace AgentDemo
             public static string AESEncrypt(string text, string key, out string tag, out string nonce)
             {
                 byte[] tagByte = new byte[16];
-                byte[] nonceByte = new byte[12];
-                new Random().NextBytes(nonceByte);
+                // byte[] nonceByte = new byte[12];
+                // new Random().NextBytes(nonceByte);
+                // TODO:
+                byte[] nonceByte = Convert.FromBase64String("dp3biE6ndhY5sKOv");
                 byte[] textByte = Encoding.UTF8.GetBytes(text);
                 byte[] encryptedByte = new byte[textByte.Length];
                 using (AesGcm aes = new AesGcm(Encoding.UTF8.GetBytes(key)))

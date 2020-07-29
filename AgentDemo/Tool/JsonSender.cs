@@ -1,6 +1,7 @@
 ﻿using AgentDemo.Json;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +18,12 @@ namespace AgentDemo
             /// <param name="jsonData">要发送的json数据</param>
             /// <param name="agentConfig">Agent配置信息</param>
             /// <returns>加密后的信息</returns>
-            private static string EncryptJsonData(XJsonData jsonData, AgentConfig agentConfig)
+            private static string EncryptJsonData(XJson.JsonData jsonData, AgentConfig agentConfig)
             {
                 // Aes-Gcm加密
                 var encryptedJson = TypeConverter.AESEncrypt(jsonData.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
                 // 封装成json
-                XAesResult result = new XAesResult
+                XJson.AesResult result = new XJson.AesResult
                 {
                     Id = agentConfig.AgentID,
                     Aes = encryptedJson,
@@ -40,26 +41,24 @@ namespace AgentDemo
             /// <returns>服务器响应内容</returns>
             private static async Task<string> SendMessageAsync(string message, AgentConfig agentConfig)
             {
-                string ip = agentConfig.IP;
-                int port = agentConfig.Port;
-                int timeOut = agentConfig.TimeOut;
-
                 // 创建socket
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
                 {
-                    SendTimeout = timeOut,
-                    ReceiveTimeout = timeOut
+                    SendTimeout = agentConfig.TimeOut,
+                    ReceiveTimeout = agentConfig.TimeOut
                 };
 
                 // 连接服务器
                 try
                 {
-                    socket.Connect(ip, port);
+                    IPAddress ip = IPAddress.Parse(agentConfig.IP);
+                    int port = agentConfig.Port;
+                    socket.Connect(new IPEndPoint(ip, port));
                     Debuger.WriteLine(agentConfig.DEBUG, $"Sokcet连接成功: {ip}:{port}");
                 }
                 catch (Exception e)
                 {
-                    Debuger.WriteLine(agentConfig.DEBUG, $"Socket连接失败，错误信息：{e.Message}");
+                    Debuger.WriteLine($"Socket连接失败，错误信息：{e.Message}");
                     return string.Empty;
                 }
 
@@ -72,14 +71,20 @@ namespace AgentDemo
                 // 接收响应
                 byte[] dataArray = new byte[1024];
                 StringBuilder response = new StringBuilder();
-                while(true)
+                try
                 {
-                    var receiveDataSize = await socket.ReceiveAsync(dataArray, SocketFlags.None);
-                    if (receiveDataSize == 0) break;
-                    response.Append(Convert.ToBase64String(dataArray, 0, receiveDataSize));
+                    while (true)
+                    {
+                        var receiveDataSize = await socket.ReceiveAsync(dataArray, SocketFlags.None);
+                        if (receiveDataSize == 0) break;
+                        response.Append(Convert.ToBase64String(dataArray, 0, receiveDataSize));
+                    }
+                }catch(Exception e)
+                {
+                    Debuger.WriteLine($"数据接收失败，错误信息：{e.Message}");
                 }
-                socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
+
                 Debuger.WriteLine(agentConfig.DEBUG, $"回复已接收，数据长度：{response.Length}");
                 return Encoding.UTF8.GetString(Convert.FromBase64String(response.ToString()));
             }
@@ -90,7 +95,7 @@ namespace AgentDemo
             /// <param name="jsonData">发送的json数据</param>
             /// <param name="agentConfig">AgentID</param>
             /// <returns>服务器返回的消息</returns>
-            public static async Task<string> SendJsonData(XJsonData jsonData, AgentConfig agentConfig)
+            public static async Task<string> SendJsonData(XJson.JsonData jsonData, AgentConfig agentConfig)
             {
                 Debuger.WriteLine(agentConfig.DEBUG, $"加密前数据：{jsonData}");
                 var message = EncryptJsonData(jsonData, agentConfig);
