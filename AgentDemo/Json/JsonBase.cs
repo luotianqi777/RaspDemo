@@ -15,9 +15,5 @@ namespace AgentDemo.Json
             }
 
         }
-        public static T GetJson<T>(string jsonString) where T : JsonBase
-        {
-            return JsonConvert.DeserializeObject<T>(jsonString);
-        }
     }
 }

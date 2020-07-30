@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -29,18 +30,6 @@ namespace AgentDemo.Json
                 AesNonce = agentConfig.AesNonce
             };
             return result.ToString();
-        }
-
-        /// <summary>
-        /// 将json信息解密
-        /// </summary>
-        /// <param name="jsonString">要解密的字符串</param>
-        /// <param name="agentConfig">插件配置</param>
-        /// <returns>解密后的json字符串</returns>
-        private static string DncryptJsonData(string jsonString, AgentConfig agentConfig)
-        {
-            AesResult result = GetJson<AesResult>(jsonString);
-            return TypeConverter.AESDecrypt(result.Aes, agentConfig.AesKey, result.AesTag, result.AesNonce);
         }
 
         /// <summary>
@@ -133,8 +122,8 @@ namespace AgentDemo.Json
             byte[] sizeByte = new byte[4];
             Array.Copy(bytes, sizeByte, 4);
             size = TypeConverter.ByteToInt(sizeByte);
-            string result = utf8String.Substring(2);
-            return DncryptJsonData(result, agentConfig);
+            var aesResult = JsonConvert.DeserializeObject<AesResult>(utf8String.Substring(2));
+            return TypeConverter.AESDecrypt(aesResult.Aes, agentConfig.AesKey, aesResult.AesTag, aesResult.AesNonce);
         }
 
     }

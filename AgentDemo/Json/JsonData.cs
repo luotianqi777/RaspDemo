@@ -30,24 +30,6 @@ namespace AgentDemo.Json
                 };
             }
 
-            /// <summary>
-            /// 获取JsonData
-            /// </summary>
-            /// <typeparam name="T">Msg类型</typeparam>
-            /// <param name="jsonString">json字符串</param>
-            /// <returns>JsonData</returns>
-            public static JsonData GetJsonData<T>(string jsonString)where T:Msg
-            {
-                var dataNoMsg = GetJson<JsonDataNoMsg>(jsonString);
-                var msg = GetJson<Msg>(jsonString);
-                return new JsonData
-                {
-                    ID = dataNoMsg.ID,
-                    TimeStamp = dataNoMsg.TimeStamp,
-                    Msg = msg
-                };
-            }
-
         }
     }
 }
