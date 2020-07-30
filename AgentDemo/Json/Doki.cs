@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Net;
+using System.Net.Sockets;
 
 namespace AgentDemo.Json
 {
@@ -22,21 +23,30 @@ namespace AgentDemo.Json
                     public int VersionMain { get; set; }
                     [JsonProperty("version_pocs")]
                     public int VersionPocs { get; set; }
+                    private string localip= string.Empty;
                     [JsonProperty("ip")]
                     public string IP
                     {
                         get
                         {
+                            if (!string.IsNullOrEmpty(localip))
+                            {
+                                return localip;
+                            }
                             // 获取本机IP
-                            var addresscs = Dns.GetHostAddresses(Dns.GetHostName());
-                            if (addresscs?.Length > 0)
+                            foreach(var address in Dns.GetHostAddresses(Dns.GetHostName()))
                             {
-                                return addresscs[0].ToString();
+                                if (address.AddressFamily == AddressFamily.InterNetwork)
+                                {
+                                    localip = address.ToString();
+                                    break;
+                                }
                             }
-                            else
+                            if (string.IsNullOrEmpty(localip))
                             {
-                                throw new Exception("未找到本机IP");
+                                throw new Exception("找不到本地ipv4");
                             }
+                            return localip;
                         }
                     }
                     [JsonProperty("language")]
