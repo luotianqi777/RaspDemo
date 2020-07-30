@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Net;
 
 namespace AgentDemo.Json
 {
@@ -21,7 +23,22 @@ namespace AgentDemo.Json
                     [JsonProperty("version_pocs")]
                     public int VersionPocs { get; set; }
                     [JsonProperty("ip")]
-                    public string Ip { get; set; }
+                    public string IP
+                    {
+                        get
+                        {
+                            // 获取本机IP
+                            var addresscs = Dns.GetHostAddresses(Dns.GetHostName());
+                            if (addresscs?.Length > 0)
+                            {
+                                return addresscs[0].ToString();
+                            }
+                            else
+                            {
+                                throw new Exception("未找到本机IP");
+                            }
+                        }
+                    }
                     [JsonProperty("language")]
                     public string Language { get; set; }
                     [JsonProperty("language_version")]
@@ -30,15 +47,13 @@ namespace AgentDemo.Json
                     public string Server { get; set; }
                     [JsonProperty("server_version")]
                     public string ServerVersion { get; set; }
-                    [JsonProperty("req_num")]
-                    public int ReqNum { get; set; }
                 }
 
                 /// <summary>
-                /// 获取一个心跳发送Json数据
+                /// 获取一个心跳发送实例
                 /// </summary>
-                /// <param name="localip">本地IP</param>
-                public static Sender GetInstance(string localip)
+                /// <returns>心跳发送实例</returns>
+                public static Sender GetInstance()
                 {
                     return new Sender
                     {
@@ -46,7 +61,6 @@ namespace AgentDemo.Json
                         {
                             VersionMain = 3010012,
                             VersionPocs = 0,
-                            Ip = localip,
                             Language = "C#",
                             LanguageVersion = "core 3.1",
                             Server = "",

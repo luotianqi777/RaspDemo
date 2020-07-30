@@ -9,7 +9,7 @@ namespace AgentDemo.Json
     {
         public abstract class Msg : JsonBase { }
 
-        public class JsonDataNoMsg : JsonBase
+        private class JsonDataNoMsg : JsonBase
         {
             [JsonProperty("id")]
             public string ID { get; set; }

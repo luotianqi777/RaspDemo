@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Org.BouncyCastle.Utilities.Net;
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace AgentDemo
@@ -9,9 +11,7 @@ namespace AgentDemo
         public string AesTag;
         public string AesNonce;
         public int Port { get; set; }
-        public int LocalPort { get; set; }
         public string IP { get; set; }
-        public string LocalIP { get; set; }
         public string AgentID { get; set; }
         public string AesKey { get; set; }
         private int timeOut = 1000 * 5;
@@ -32,9 +32,7 @@ namespace AgentDemo
             return new AgentConfig()
             {
                 Port = 9090,
-                LocalPort = 5000,
                 IP = "192.168.172.239",
-                LocalIP = "192.168.172.112",
                 TimeOut = 30 * 1000,
                 AgentID = "DMHUEHFXSQADARKH",
                 AesKey = "WPOIVXHUZINJRDQC",

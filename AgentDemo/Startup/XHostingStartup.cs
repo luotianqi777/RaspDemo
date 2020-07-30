@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using AgentDemo.Json;
+using Newtonsoft.Json;
 
 [assembly: HostingStartup(typeof(XHostingStartup))]
 namespace AgentDemo.Startup
@@ -67,12 +68,12 @@ namespace AgentDemo.Startup
             {
                 await Task.Run(async () =>
                 {
-                    AgentConfig agentConfig = AgentConfig.GetInstance();
-                    XJson.Msg doki = XJson.Doki.Sender.GetInstance(agentConfig.LocalIP);
-                    XJson.JsonData jsonData = XJson.JsonData.GetInstance(agentConfig.AgentID, doki);
-                    var responcce = await XJson.SendJsonData(jsonData, agentConfig);
-                    var resultJson = XTool.TypeConverter.BytesToString(responcce, out _);
-                    Debuger.WriteLine(responcce);
+                    var agentConfig = AgentConfig.GetInstance();
+                    var doki = XJson.Doki.Sender.GetInstance();
+                    var response = await XJson.SendJsonMsg(doki, agentConfig);
+                    var rdoki = XJson.GetResponseJsonData(response, agentConfig, out _);
+                    Debuger.WriteLine(doki);
+                    Debuger.WriteLine(rdoki);
                 });
                 await Task.Delay(interTime, stoppingToken);
             }
@@ -91,7 +92,7 @@ namespace AgentDemo.Startup
         {
             return app =>
             {
-                app.Use(XMiddlewares.HttpMiddle);
+                app.Use(XMiddlewares.TestMain);
                 next(app);
             };
         }
