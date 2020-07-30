@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 
 namespace AgentDemo.Json
 {
@@ -36,41 +38,33 @@ namespace AgentDemo.Json
                     [JsonProperty("type")]
                     public string Type { get; set; }
                     [JsonProperty("info")]
-                    public XInfo Info { get; set; }
+                    public string Info { get; set; }
                     [JsonProperty("url")]
                     public string Url { get; set; }
                     [JsonProperty("httpdata")]
                     public string HttpData { get; set; }
-                    public class XInfo
-                    {
-                        [JsonProperty("name")]
-                        public XName Name { get; set; }
-                        [JsonProperty("address")]
-                        public string Address { get; set; }
-                        public class XName
-                        {
-                            [JsonProperty("$xmiast")]
-                            public string Xmiast { get; set; }
-                        }
-                    }
+                    
                 }
             #endregion
 
-                public static Vul GetInstance()
+                public static Vul GetInstance(HttpRequest request, string info, string stackTrace)
                 {
                     return new Vul
                     {
                         Ustr = null,
-                        VulIast = null,
+                        VulIast = new XVulIast
+                        {
+                            Method = request.Method,
+                            Info = info,
+                            StackTrace = stackTrace,
+                            Url = XTool.HttpHelper.GetUrl(request),
+                        }
                     };
                 }
             }
 
-            public static BugInfo GetInstance()
+            public static BugInfo GetInstance(params Vul[] vuls)
             {
-                var vuls = new Vul[]{
-                    Vul.GetInstance()
-                };
                 return new BugInfo
                 {
                     Cmd = 4001,

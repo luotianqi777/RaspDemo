@@ -20,8 +20,6 @@ namespace RaspDemo
 
     public class MySqlManger
     {
-        private static MySqlConnection sqlConnection;
-        private static MySqlCommand sqlCommand;
         private static class SqlString
         {
             public static string Connect = "server=localhost;port=3306;user=ltq;password=luotianqi;database=test;";
@@ -33,20 +31,37 @@ namespace RaspDemo
         /// </summary>
         public static string ExecQuery(string id)
         {
-            sqlConnection = new MySqlConnection(SqlString.Connect);
-            sqlConnection.Open();
-            sqlCommand = new MySqlCommand(SqlString.Query+id, sqlConnection);
-            MySqlDataReader mySqlDataReader = sqlCommand.ExecuteReader();
-            StringBuilder builder = new StringBuilder();
-            while (mySqlDataReader.Read())
+            StringBuilder queryResult = new StringBuilder();
+            MySqlConnection sqlConnection;
+            try
             {
-                builder.Append(mySqlDataReader[1]);
+                sqlConnection = new MySqlConnection(SqlString.Connect);
+                sqlConnection.Open();
             }
-            mySqlDataReader.Close();
-            sqlConnection.Close();
-            string result = builder.ToString();
-            _ = result.Insert(0, "test: ");
-            return result;
+            catch
+            {
+                Debuger.WriteLine("数据库连接失败");
+                return string.Empty;
+            }
+            try
+            {
+                MySqlCommand sqlCommand = new MySqlCommand(SqlString.Query + id, sqlConnection);
+                MySqlDataReader mySqlDataReader = sqlCommand.ExecuteReader();
+                while (mySqlDataReader.Read())
+                {
+                    queryResult.Append(mySqlDataReader[1]);
+                }
+                mySqlDataReader.Close();
+            }
+            catch
+            {
+                Debuger.WriteLine("查询失败");
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+            return queryResult.ToString();
         }
 
     }

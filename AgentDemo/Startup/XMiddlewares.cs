@@ -21,6 +21,10 @@ namespace AgentDemo.Startup
                 // Debuger.WriteLine(msg);
                 // Debuger.WriteLine(jsonDataString);
                 Debuger.WriteLine(XTool.HttpHelper.GetUrl(context.Request));
+                foreach(var pair in context.Request.Headers)
+                {
+                    Debuger.WriteLine($"{pair.Key}: {pair.Value}");
+                }
                 await next(context);
             };
         }
