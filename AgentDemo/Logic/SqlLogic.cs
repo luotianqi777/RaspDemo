@@ -1,5 +1,6 @@
 ﻿using AgentDemo.Json;
 using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 
@@ -11,7 +12,9 @@ namespace AgentDemo.Logic
         {
             // sql关键字列表
             private static readonly string[] sqlCommandKeywordList = "and|exec|insert|select|drop|grant|alter|delete|update|count|chr|mid|master|truncate|char|declare|or|*|;|+|'|%".Split('|')
-                .Select(str => { return str.Length == 1 ? str : $" {str} "; }).ToArray();
+                // 这个地方为空格匹配(或者%20)
+                // .Select(str => { return str.Length == 1 ? str : $" {str} "; })
+                .ToArray();
 
             /// <summary>
             /// 判断一条sql语句有没有注入风险
@@ -29,8 +32,6 @@ namespace AgentDemo.Logic
                         return true;
                 }
                 return false;
-                // var tokenString = userInput.Split(sqlCommandKeywordList, StringSplitOptions.RemoveEmptyEntries);
-                // return tokenString.Length > 1;
             }
 
             /// <summary>
@@ -42,9 +43,22 @@ namespace AgentDemo.Logic
                 if (IsInject(sqlCommand))
                 {
                     Debuger.WriteLine("有注入风险");
-                    var bugInfo = XJson.BugInfo.GetInstance();
-                    Debuger.WriteLine(bugInfo);
-                    await XJson.SendJsonMsg(bugInfo, AgentConfig.GetInstance());
+                    var request = XTool.HttpHelper.GetCurrentHttpContext().Request;
+
+                    // Debug信息：打印http请求的headers
+                    foreach(var pair in request.Headers)
+                    {
+                        Debuger.WriteLine($"{pair.Key}: {pair.Value}");
+                    }
+
+                    // 如果是需要检测的包，则准备上报bug
+                    // TODO: 需要将这块封装为一个独立的方法
+                    if (XTool.HttpHelper.IsCheckRequest(request))
+                    {
+                        var bugInfo = XJson.BugInfo.GetInstance(request, sqlCommand, "there is stackTrace");
+                        Debuger.WriteLine(bugInfo);
+                        await XJson.SendJsonMsg(bugInfo, AgentConfig.GetInstance());
+                    }
                 }
             }
 

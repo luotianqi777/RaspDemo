@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -17,7 +18,6 @@ namespace RaspDemo
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            _ = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,16 +29,16 @@ namespace RaspDemo
               //  app.UseDeveloperExceptionPage();
             }
 
+            #region Route
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("sql/{id}", async context =>
-                 {
-                     var id = context.Request.RouteValues["id"];
-                     string result = MySqlManger.ExecQuery(id.ToString());
-                     await context.Response.WriteAsync(result);
-                 });
+                //endpoints.MapGet("sql/{id}", async context =>
+                // {
+                //     var id = context.Request.RouteValues["id"];
+                //     string result = MySqlManger.ExecQuery(id.ToString());
+                //     await context.Response.WriteAsync(result);
+                // });
 
                 endpoints.MapGet("cmd/{command}", async context =>
                 {
@@ -64,6 +64,15 @@ namespace RaspDemo
                     await context.Response.WriteAsync("Hello");
                 });
             });
+            #endregion
+
         }
+
+        [HttpGet("id")]
+        public string Sql(string id)
+        {
+            return MySqlManger.ExecQuery(id);
+        }
+
     }
 }

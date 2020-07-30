@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Ocsp;
 
 namespace AgentDemo.Json
 {
@@ -8,6 +7,7 @@ namespace AgentDemo.Json
     {
         public class BugInfo : Msg
         {
+            #region Propertys
             [JsonProperty("result")]
             public XResult Result { get; set; }
             [JsonProperty("cmd")]
@@ -22,7 +22,6 @@ namespace AgentDemo.Json
 
             public class Vul
             {
-                #region Propertys
                 [JsonProperty("vul_iast")]
                 public XVulIast VulIast { get; set; }
                 [JsonProperty("ustr")]
@@ -45,33 +44,34 @@ namespace AgentDemo.Json
                     public string HttpData { get; set; }
                     
                 }
+            }
             #endregion
 
-                public static Vul GetInstance(HttpRequest request, string info, string stackTrace)
-                {
-                    return new Vul
-                    {
-                        Ustr = null,
-                        VulIast = new XVulIast
-                        {
-                            Method = request.Method,
-                            Info = info,
-                            StackTrace = stackTrace,
-                            Url = XTool.HttpHelper.GetUrl(request),
-                        }
-                    };
-                }
-            }
-
-            public static BugInfo GetInstance(params Vul[] vuls)
+            public static BugInfo GetInstance(HttpRequest request, string info, string stackTrace)
             {
+                var url = XTool.HttpHelper.GetUrl(request);
+                var headers = request.Headers;
+                var jsonString = headers["XMIAST"];
+                dynamic json = JsonConvert.DeserializeObject(jsonString);
+                var param = url[(url.LastIndexOf('/') + 1)..url.IndexOf('?')];
                 return new BugInfo
                 {
                     Cmd = 4001,
                     Result = new XResult
                     {
-                        Tid = 1,
-                        Vuls = vuls
+                        Tid = json.tid,
+                        Vuls = new Vul[] { new Vul{
+                            Ustr = json.ustr,
+                            VulIast = new Vul.XVulIast {
+                                Method = request.Method,
+                                Info = info,
+                                StackTrace = stackTrace,
+                                Url = url,
+                                Type = json.type,
+                                Param = param,
+                                } 
+                            } 
+                        }
                     }
                 };
             }

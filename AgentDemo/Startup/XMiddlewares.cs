@@ -1,5 +1,6 @@
 ﻿using AgentDemo.Json;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,18 +13,19 @@ namespace AgentDemo.Startup
         {
             return async context =>
             {
-                // var agentConfig = AgentConfig.GetInstance();
-                // var msg = XJson.Request.GetInstance(context.Request, "sql");
-                // var jsonData = XJson.JsonData.GetInstance(agentConfig.AgentID, msg);
-                // var response = await XJson.SendJsonData(jsonData, agentConfig);
-                // response = XJson.GetResponse(response, out int size);
-                // var jsonDataString = XJson.DncryptJsonData(response, agentConfig);
-                // Debuger.WriteLine(msg);
-                // Debuger.WriteLine(jsonDataString);
                 Debuger.WriteLine(XTool.HttpHelper.GetUrl(context.Request));
-                foreach(var pair in context.Request.Headers)
+                if (!XTool.HttpHelper.IsCheckRequest(context.Request))
                 {
-                    Debuger.WriteLine($"{pair.Key}: {pair.Value}");
+                    // 要转发的请求
+                    // var agent = AgentConfig.GetInstance();
+                    // var requestJson = XJson.Request.GetInstance(context.Request, "sql");
+                    // var response = await XJson.SendJsonMsg(requestJson, agent);
+                    // response = XJson.GetResponseJsonData(response, agent, out _);
+                    // Debuger.WriteLine(requestJson);
+                    // Debuger.WriteLine(JsonConvert.DeserializeObject(response));
+                }
+                else
+                {
                 }
                 await next(context);
             };
