@@ -30,8 +30,6 @@ namespace AgentDemo.Json
                     public string Server { get; set; }
                     [JsonProperty("server_version")]
                     public string ServerVersion { get; set; }
-                    [JsonProperty("req_num")]
-                    public int ReqNum { get; set; }
                 }
 
                 /// <summary>

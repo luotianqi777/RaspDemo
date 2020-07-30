@@ -37,7 +37,7 @@ namespace AgentDemo.Json
         /// <param name="jsonString">要解密的字符串</param>
         /// <param name="agentConfig">插件配置</param>
         /// <returns>解密后的json字符串</returns>
-        public static string DncryptJsonData(string jsonString, AgentConfig agentConfig)
+        private static string DncryptJsonData(string jsonString, AgentConfig agentConfig)
         {
             AesResult result = GetJson<AesResult>(jsonString);
             return TypeConverter.AESDecrypt(result.Aes, agentConfig.AesKey, result.AesTag, result.AesNonce);
@@ -64,7 +64,6 @@ namespace AgentDemo.Json
                 IPAddress ip = IPAddress.Parse(agentConfig.IP);
                 int port = agentConfig.Port;
                 socket.Connect(new IPEndPoint(ip, port));
-                Debuger.WriteLine(agentConfig.DEBUG, $"Sokcet连接成功: {ip}:{port}");
             }
             catch (Exception e)
             {
@@ -103,10 +102,39 @@ namespace AgentDemo.Json
         /// <param name="jsonData">发送的json数据</param>
         /// <param name="agentConfig">AgentID</param>
         /// <returns>服务器返回的消息</returns>
-        public static async Task<string> SendJsonData(JsonData jsonData, AgentConfig agentConfig)
+        private static async Task<string> SendJsonData(JsonData jsonData, AgentConfig agentConfig)
         {
             var message = EncryptJsonData(jsonData, agentConfig);
             return await SendMessageAsync(message, agentConfig);
+        }
+
+        /// <summary>
+        /// 向服务端发送Msg
+        /// </summary>
+        /// <param name="msg">发送的Msg</param>
+        /// <param name="agentConfig">Agent配置信息</param>
+        /// <returns>服务器响应消息</returns>
+        public static async Task<string> SendJsonMsg(Msg msg, AgentConfig agentConfig)
+        {
+            var jsonData = JsonData.GetInstance(agentConfig.AgentID, msg);
+            return await SendJsonData(jsonData, agentConfig);
+        }
+
+        /// <summary>
+        /// utf8格式的字节流转字符串并解密为JsonData，并将字节流前4bit作为字节流长度提取出来
+        /// </summary>
+        /// <param name="bytes">字节流</param>
+        /// <param name="agentConfig">Agent配置信息</param>
+        /// <param name="size">字节流长度</param>
+        /// <returns>字符串</returns>
+        public static string GetResponseJsonData(string utf8String, AgentConfig agentConfig, out int size)
+        {
+            var bytes = Encoding.UTF8.GetBytes(utf8String);
+            byte[] sizeByte = new byte[4];
+            Array.Copy(bytes, sizeByte, 4);
+            size = TypeConverter.ByteToInt(sizeByte);
+            string result = utf8String.Substring(2);
+            return DncryptJsonData(result, agentConfig);
         }
 
     }

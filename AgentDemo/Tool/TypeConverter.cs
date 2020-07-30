@@ -85,7 +85,7 @@ namespace AgentDemo
             /// </summary>
             /// <param name="num">要转换的整数</param>
             /// <returns>整数对应的字节流</returns>
-            private static byte[] IntToByte(int num)
+            public static byte[] IntToByte(int num)
             {
                 byte[] data = new byte[4];
                 data[0] = (byte)(num & 0xFF);
@@ -100,7 +100,7 @@ namespace AgentDemo
             /// </summary>
             /// <param name="bytes">要转换的字节流</param>
             /// <returns>字节流对应的整数</returns>
-            private static int ByteToInt(byte[] bytes)
+            public static int ByteToInt(byte[] bytes)
             {
                 int value = (bytes[0] & 0xFF)
                         | ((bytes[1] & 0xFF) << 8)
@@ -119,22 +119,6 @@ namespace AgentDemo
                 byte[] messageByte = Encoding.UTF8.GetBytes(message);
                 byte[] sizeByte = IntToByte(messageByte.Length);
                 return sizeByte.Concat(messageByte).ToArray();
-            }
-
-            /// <summary>
-            /// utf8格式的字节流转字符串，并将字节流前4bit作为字节流长度提取出来
-            /// </summary>
-            /// <param name="bytes">字节流</param>
-            /// <param name="size">字节流长度</param>
-            /// <returns>字符串</returns>
-            public static string BytesToString(string utf8String, out int size)
-            {
-                var bytes = Encoding.UTF8.GetBytes(utf8String);
-                byte[] sizeByte = new byte[4];
-                Array.Copy(bytes, sizeByte, 4);
-                size = ByteToInt(sizeByte);
-                string result = utf8String.Substring(2);
-                return result;
             }
 
         }
