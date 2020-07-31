@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
 
-namespace RaspDemo
+namespace XMySqlManger
 {
 
     public static class Debuger

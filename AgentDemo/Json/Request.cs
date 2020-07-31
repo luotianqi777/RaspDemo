@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
+using System;
 using System.Net;
 
 namespace AgentDemo.Json
@@ -66,6 +67,14 @@ namespace AgentDemo.Json
                     Debuger.WriteLine("警告：iastrange的个数为零");
                 }
                 var headers = request.Headers;
+                var url =  XTool.HttpHelper.GetUrl(request);
+                // TODO: 找不到直接获取param的办法，目前通过搜索?来截取
+                var index = url.IndexOf('?');
+                if (index == -1)
+                {
+                    throw new Exception("需要转发的url中找不到param");
+                }
+                var referer = url.Substring(0, index);
 
                 return new Request
                 {
@@ -75,7 +84,7 @@ namespace AgentDemo.Json
                         Urls = new XResult.XUrls[] {
                             new XResult.XUrls {
                                 Method = request.Method,
-                                Url = XTool.HttpHelper.GetUrl(request),
+                                Url = url,
                                 Data = "",
                                 Headers = new XResult.XUrls.XHeaders
                                 {
@@ -83,7 +92,7 @@ namespace AgentDemo.Json
                                     Accept = headers["Accept"],
                                     Upgrade = headers["Upgrade-Insecure-Requests"],
                                     Connection = headers["Connection"],
-                                    Referer = headers["Referer"],
+                                    Referer = referer,
                                     UserAgent = headers["User-Agent"],
                                     Host = headers["Host"],
                                     AcceptEncoding = headers["Accept-Encoding"],

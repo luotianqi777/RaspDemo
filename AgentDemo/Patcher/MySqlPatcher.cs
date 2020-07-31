@@ -15,7 +15,7 @@ namespace AgentDemo.Patcher
             {
                 Type type = XPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
-                CheckLogic.SQL.Check(sqlCommand);
+                CheckLogic.SQL.CheckAsync(sqlCommand);
                 return true;
             }
         }
