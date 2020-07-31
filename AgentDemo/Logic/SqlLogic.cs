@@ -45,18 +45,12 @@ namespace AgentDemo.Logic
                     Debuger.WriteLine("有注入风险");
                     var request = XTool.HttpHelper.GetCurrentHttpContext().Request;
 
-                    // Debug信息：打印http请求的headers
-                    foreach(var pair in request.Headers)
-                    {
-                        Debuger.WriteLine($"{pair.Key}: {pair.Value}");
-                    }
-
                     // 如果是需要检测的包，则准备上报bug
                     // TODO: 需要将这块封装为一个独立的方法
                     if (XTool.HttpHelper.IsCheckRequest(request))
                     {
                         var bugInfo = XJson.BugInfo.GetInstance(request, sqlCommand, "there is stackTrace");
-                        Debuger.WriteLine(bugInfo);
+                        Debuger.WriteLine($"发送的漏洞信息: {bugInfo}");
                         await XJson.SendJsonMsg(bugInfo, AgentConfig.GetInstance());
                     }
                 }

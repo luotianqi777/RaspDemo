@@ -53,7 +53,7 @@ namespace AgentDemo.Json
                 var headers = request.Headers;
                 var jsonString = headers["XMIAST"];
                 dynamic json = JsonConvert.DeserializeObject(jsonString);
-                var param = url[(url.LastIndexOf('/') + 1)..url.IndexOf('?')];
+                var param = url[(url.IndexOf('?') + 1)..url.IndexOf('=')];
                 return new BugInfo
                 {
                     Cmd = 4001,
