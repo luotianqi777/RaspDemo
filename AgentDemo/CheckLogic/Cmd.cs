@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AgentDemo.Logic
+namespace AgentDemo
 {
-    partial class Logic
+    public partial class CheckLogic
     {
         public static class Cmd
         {

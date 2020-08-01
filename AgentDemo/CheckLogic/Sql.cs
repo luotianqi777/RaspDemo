@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
-namespace AgentDemo.Logic
+namespace AgentDemo
 {
-    partial class CheckLogic
+    public partial class CheckLogic
     {
         public static class SQL
         {
@@ -24,7 +24,7 @@ namespace AgentDemo.Logic
             public static bool IsInject(string sqlCommand)
             {
                 var userInputStartIndex = sqlCommand.IndexOf("=");
-                if (userInputStartIndex == -1) return false;
+                // 此处无需判断是否找到=，如果找不到index为-1，那么接下来会对整个sqlCommand进行检测
                 var userInput = sqlCommand.Substring(userInputStartIndex + 1).ToLower().Trim();
                 foreach(var keyWord in sqlCommandKeywordList)
                 {
@@ -32,28 +32,6 @@ namespace AgentDemo.Logic
                         return true;
                 }
                 return false;
-            }
-
-            /// <summary>
-            /// 对sql语句进行检查
-            /// </summary>
-            /// <param name="sqlCommand">sql语句</param>
-            public static async void CheckAsync(string sqlCommand)
-            {
-                if (IsInject(sqlCommand))
-                {
-                    Debuger.WriteLine("有注入风险");
-                    var request = XTool.HttpHelper.GetCurrentHttpContext().Request;
-
-                    // 如果是需要检测的包，则准备上报bug
-                    // TODO: 需要将这块封装为一个独立的方法
-                    if (XTool.HttpHelper.IsCheckRequest(request))
-                    {
-                        var bugInfo = XJson.BugInfo.GetInstance(request, sqlCommand, "there is stackTrace");
-                        Debuger.WriteLine($"发送的漏洞信息: {bugInfo}");
-                        await XJson.SendJsonMsg(bugInfo, AgentConfig.GetInstance());
-                    }
-                }
             }
 
         }

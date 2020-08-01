@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MVCDemo.Models;
-using XMySqlManger;
 
 namespace MVCDemo.Controllers
 {
@@ -20,10 +19,8 @@ namespace MVCDemo.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IActionResult Index(string id)
+        public IActionResult Index()
         {
-            var result = MySqlManger.ExecQuery(id);
             return View();
         }
 
