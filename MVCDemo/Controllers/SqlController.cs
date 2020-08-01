@@ -31,7 +31,7 @@ namespace MVCDemo.Controllers
             }
             catch
             {
-                Console.WriteLine("数据库连接失败");
+                Debuger.WriteLine("数据库连接失败");
                 return string.Empty;
             }
             try
@@ -46,7 +46,7 @@ namespace MVCDemo.Controllers
             }
             catch
             {
-                Console.WriteLine("查询失败");
+                Debuger.WriteLine("查询失败");
             }
             finally
             {

@@ -15,21 +15,28 @@ namespace MVCDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult Upload(string fileUrl)
+        public IActionResult Upload(string url)
         {
             return View();
         }
 
 
         [HttpGet]
-        public IActionResult Download(string fileUrl)
+        public IActionResult Download(string url)
         {
             var net = new System.Net.WebClient();
-            var data = net.DownloadData(fileUrl);
-            var content = new MemoryStream(data);
-            var contentType = "APPLICATION/octet-stream";
-            var fileName = "fileUrl";
-            return File(content, contentType, fileName);
+            try
+            {
+                var data = net.DownloadData(url);
+                var content = new MemoryStream(data);
+                var contentType = "APPLICATION/octet-stream";
+                return File(content, contentType, url);
+            }
+            catch(Exception e)
+            {
+                Debuger.WriteLine($"文件下载失败：{url}，原因：{e.Message}");
+                return View();
+            }
         }
     }
 }

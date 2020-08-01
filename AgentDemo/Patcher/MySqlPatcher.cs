@@ -1,6 +1,4 @@
-﻿using AgentDemo.Logic;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 
 namespace AgentDemo.Patcher
 {
@@ -15,7 +13,11 @@ namespace AgentDemo.Patcher
             {
                 Type type = XPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
-                CheckLogic.SQL.CheckAsync(sqlCommand);
+                var request = XTool.HttpHelper.GetCurrentHttpRequest();
+                // 发送检测请求
+                CheckLogic.SendCheckRequest(request, "sql");
+                // IAST检测
+                CheckLogic.Check(CheckLogic.SQL.IsInject, request, sqlCommand, "Sql调用栈");
                 return true;
             }
         }
