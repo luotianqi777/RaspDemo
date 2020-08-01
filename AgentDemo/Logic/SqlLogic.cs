@@ -50,7 +50,7 @@ namespace AgentDemo.Logic
                     if (XTool.HttpHelper.IsCheckRequest(request))
                     {
                         var bugInfo = XJson.BugInfo.GetInstance(request, sqlCommand, "there is stackTrace");
-                        Debuger.WriteLine($"发送的漏洞信息: {bugInfo}");
+                        Debuger.WriteLine($"发送的漏洞信息: {bugInfo.GetJsonString()}");
                         await XJson.SendJsonMsg(bugInfo, AgentConfig.GetInstance());
                     }
                 }

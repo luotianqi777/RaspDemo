@@ -24,7 +24,7 @@ namespace AgentDemo.Startup
                         var requestJson = XJson.Request.GetInstance(context.Request, "sql");
                         var response = await XJson.SendJsonMsg(requestJson, agent);
                         response = XJson.GetResponseJsonData(response, agent, out _);
-                        Debuger.WriteLine(agent.DEBUG, $"转发的请求: {requestJson}");
+                        Debuger.WriteLine(agent.DEBUG, $"转发的请求: {requestJson.GetJsonString()}");
                         Debuger.WriteLine(agent.DEBUG, $"接收的回复: {JsonConvert.DeserializeObject(response)}");
                     }
                     catch (Exception e)
