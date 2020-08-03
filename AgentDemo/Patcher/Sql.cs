@@ -3,7 +3,7 @@
 namespace AgentDemo.Patcher
 {
 
-    class MySql
+    class Sql
     {
 
         [XPatch("MySql.Data", "MySql.Data.MySqlClient.MySqlCommand", "ExecuteReader", new Type[] { typeof(System.Data.CommandBehavior) })]
@@ -17,7 +17,7 @@ namespace AgentDemo.Patcher
                 // 发送检测请求
                 Checker.SendCheckRequest("sql");
                 // IAST检测
-                Checker.Check(new Checker.SQL(), sqlCommand, "Sql调用栈");
+                Checker.Check(new Checker.SQL(), sqlCommand, GetStackTrace());
                 return true;
             }
         }

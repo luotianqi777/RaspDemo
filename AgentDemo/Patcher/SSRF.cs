@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace AgentDemo.Patcher
 {
-    class SSRFPatcher
+    class SSRF
     {
 
     }

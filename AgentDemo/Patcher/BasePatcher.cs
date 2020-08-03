@@ -29,13 +29,13 @@ namespace AgentDemo.Patcher
             }
         }
 
-        public static void PrintStack()
+        public static string GetStackTrace()
         {
             var stacks = new StackTrace().GetFrames();
-            Debuger.WriteLine(string.Join("->", (from stack in stacks
-                                                 where stack.GetILOffset() != StackFrame.OFFSET_UNKNOWN
-                                                 select $"{stack.GetMethod().Name}()")
-                                                .Reverse()));
+            return string.Join("->", (from stack in stacks
+                                      where stack.GetILOffset() != StackFrame.OFFSET_UNKNOWN
+                                      select $"{stack.GetMethod().Name}()")
+                                                .Reverse());
         }
     }
 }

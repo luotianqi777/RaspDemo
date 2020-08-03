@@ -6,7 +6,7 @@ using HarmonyLib;
 
 namespace AgentDemo.Patcher
 {
-    class Cmd
+    class Cmd:BasePatcher
     {
         // TODO: 命令注入
         public static void Prefix()

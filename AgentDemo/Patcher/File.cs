@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace AgentDemo.Patcher
 {
-    public class Read
+    public class File
     {
 
         /// <summary>
@@ -17,12 +17,12 @@ namespace AgentDemo.Patcher
             // 发送检测请求
             Checker.SendCheckRequest("file_read");
             // 检测漏洞(IAST)
-            Checker.Check(new Checker.FileRead(), info, "文件下载漏洞调用栈");
+            Checker.Check(new Checker.FileRead(), info, BasePatcher.GetStackTrace());
         }
 
         [HarmonyPatch(typeof(WebClient))]
         [HarmonyPatch(nameof(WebClient.DownloadData), new Type[] { typeof(string) })]
-        class DownloadData
+        class DownloadData:BasePatcher
         {
             protected static bool Prefix(string address)
             {
@@ -31,9 +31,9 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(typeof(System.IO.File))]
         [HarmonyPatch(nameof(File.OpenRead), new Type[] { typeof(string) })]
-        class OpenRead
+        class OpenRead:BasePatcher
         {
             static bool Prefix(string path)
             {
@@ -42,9 +42,9 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(typeof(System.IO.File))]
         [HarmonyPatch(nameof(File.ReadAllBytes), new Type[] { typeof(string) })]
-        class ReadAllBytes
+        class ReadAllBytes:BasePatcher
         {
             static bool Prefix(string path)
             {
@@ -53,9 +53,9 @@ namespace AgentDemo.Patcher
             }
         }
     
-        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(typeof(System.IO.File))]
         [HarmonyPatch(nameof(File.ReadAllText), new Type[] { typeof(string) })]
-        class ReadAllText
+        class ReadAllText:BasePatcher
         {
             static bool Prefix(string path)
             {
@@ -64,9 +64,9 @@ namespace AgentDemo.Patcher
             }
         }
     
-        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(typeof(System.IO.File))]
         [HarmonyPatch(nameof(File.Delete), new Type[] { typeof(string) })]
-        class Delete
+        class Delete:BasePatcher
         {
             static bool Prefix(string path)
             {
