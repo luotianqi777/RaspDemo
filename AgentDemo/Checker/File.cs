@@ -10,7 +10,7 @@ namespace AgentDemo
         public class FileRead: AbstractChecker
         {
 
-            private readonly static string[] keywards = "..|/|\\".Split('|');
+            private readonly static string[] keywards = "%00|;|../|..\\".Split('|');
 
             public override bool CheckInfo(string info)
             {
@@ -28,9 +28,18 @@ namespace AgentDemo
         public class FileUpload : AbstractChecker
         {
 
+            private readonly static string[] keywards = "cshtml|html".Split('|');
+
             public override bool CheckInfo(string info)
             {
-                return true;
+                foreach(string keyward in keywards)
+                {
+                    if (info.IndexOf(keyward) != -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
     }

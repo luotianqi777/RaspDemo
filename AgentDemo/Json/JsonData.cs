@@ -20,11 +20,11 @@ namespace AgentDemo.Json
             /// <param name="agentConfig">Agent配置信息</param>
             /// <param name="msg">要发送的json数据</param>
             /// <returns>JsonData实例</returns>
-            public static JsonData GetInstance(AgentConfig agentConfig, Msg msg)
+            public static JsonData GetInstance( Msg msg)
             {
                 return new JsonData
                 {
-                    ID = agentConfig.AgentID,
+                    ID = AgentConfig.GetInstance().AgentID,
                     TimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds(),
                     Msg = msg,
                 };

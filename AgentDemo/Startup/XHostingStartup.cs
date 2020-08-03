@@ -68,10 +68,9 @@ namespace AgentDemo.Startup
             {
                 await Task.Run(async () =>
                 {
-                    var agentConfig = AgentConfig.GetInstance();
                     var doki = XJson.Doki.Sender.GetInstance();
-                    var response = await XJson.SendJsonMsg(doki, agentConfig);
-                    var rdoki = XJson.GetResponseJsonData(response, agentConfig, out _);
+                    var response = await XJson.SendJsonMsg(doki);
+                    var rdoki = XJson.GetResponseJsonData(response, out _);
                 });
                 await Task.Delay(interTime, stoppingToken);
             }

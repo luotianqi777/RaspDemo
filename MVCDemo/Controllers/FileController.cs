@@ -19,6 +19,7 @@ namespace MVCDemo.Controllers
         [HttpGet]
         public IActionResult Upload(string url)
         {
+            _ = url;
             return View();
         }
 
@@ -98,6 +99,19 @@ namespace MVCDemo.Controllers
             catch(Exception e)
             {
                 Debuger.WriteLine($"文件删除失败：{url}，原因：{e.Message}");
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Create(string url)
+        {
+            try
+            {
+                System.IO.File.Create(url);
+            }
+            catch(Exception e) {
+                Debuger.WriteLine($"文件创建失败：{url}，原因：{e.Message}");
             }
             return View();
         }

@@ -16,11 +16,11 @@ namespace AgentDemo.Json
         /// 将jsonData加密
         /// </summary>
         /// <param name="jsonData">要发送的json数据</param>
-        /// <param name="agentConfig">Agent配置信息</param>
         /// <returns>加密后的信息</returns>
-        private static string EncryptJsonData(JsonData jsonData, AgentConfig agentConfig)
+        private static string EncryptJsonData(JsonData jsonData)
         {
             // Aes-Gcm加密
+            var agentConfig = AgentConfig.GetInstance();
             var encryptedJson = TypeConverter.AESEncrypt(jsonData.ToString(), agentConfig.AesKey, out agentConfig.AesTag, out agentConfig.AesNonce);
             // 封装成json
             AesResult result = new AesResult
@@ -37,10 +37,10 @@ namespace AgentDemo.Json
         /// 向服务端发送字符串
         /// </summary>
         /// <param name="message">要发送的信息</param>
-        /// <param name="agentConfig">agent配置信息</param>
         /// <returns>服务器响应内容</returns>
-        private static async Task<string> SendMessageAsync(string message, AgentConfig agentConfig)
+        private static async Task<string> SendMessageAsync(string message)
         {
+            var agentConfig = AgentConfig.GetInstance();
             // 创建socket
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
             {
@@ -87,44 +87,31 @@ namespace AgentDemo.Json
         }
 
         /// <summary>
-        /// 向服务端发送JsonData
-        /// </summary>
-        /// <param name="jsonData">发送的json数据</param>
-        /// <param name="agentConfig">AgentID</param>
-        /// <returns>服务器返回的消息</returns>
-        private static async Task<string> SendJsonData(JsonData jsonData, AgentConfig agentConfig)
-        {
-            var message = EncryptJsonData(jsonData, agentConfig);
-            return await SendMessageAsync(message, agentConfig);
-        }
-
-        /// <summary>
         /// 向服务端发送Msg
         /// </summary>
         /// <param name="msg">发送的Msg</param>
-        /// <param name="agentConfig">Agent配置信息</param>
         /// <returns>服务器响应消息</returns>
-        public static async Task<string> SendJsonMsg(Msg msg, AgentConfig agentConfig)
+        public static async Task<string> SendJsonMsg(Msg msg)
         {
-            var jsonData = JsonData.GetInstance(agentConfig, msg);
-            return await SendJsonData(jsonData, agentConfig);
+            var jsonData = JsonData.GetInstance( msg);
+            var message = EncryptJsonData(jsonData);
+            return await SendMessageAsync(message);
         }
 
         /// <summary>
         /// utf8格式的字节流转字符串并解密为JsonData，并将字节流前4bit作为字节流长度提取出来
         /// </summary>
         /// <param name="bytes">字节流</param>
-        /// <param name="agentConfig">Agent配置信息</param>
         /// <param name="size">字节流长度</param>
         /// <returns>字符串</returns>
-        public static string GetResponseJsonData(string utf8String, AgentConfig agentConfig, out int size)
+        public static string GetResponseJsonData(string utf8String, out int size)
         {
             var bytes = Encoding.UTF8.GetBytes(utf8String);
             byte[] sizeByte = new byte[4];
             Array.Copy(bytes, sizeByte, 4);
             size = TypeConverter.ByteToInt(sizeByte);
             var aesResult = JsonConvert.DeserializeObject<AesResult>(utf8String.Substring(2));
-            return TypeConverter.AESDecrypt(aesResult.Aes, agentConfig.AesKey, aesResult.AesTag, aesResult.AesNonce);
+            return TypeConverter.AESDecrypt(aesResult.Aes, AgentConfig.GetInstance().AesKey, aesResult.AesTag, aesResult.AesNonce);
         }
 
     }

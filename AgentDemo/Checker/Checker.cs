@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Ocsp;
 using System;
 using System.Web;
 using static AgentDemo.Json.XJson;
@@ -49,7 +47,7 @@ namespace AgentDemo
         /// <param name="stackTrace">函数调用栈</param>
         public static async void Check(AbstractChecker checker, string info, string stackTrace)
         {
-            var context = XTool.HttpHelper.GetCurrentHttpContext();
+            var context = HttpHelper.GetCurrentHttpContext();
             var request = context?.Request;
             var response = context?.Response;
             if (checker == null || context == null || request == null || response == null || string.IsNullOrEmpty(info)) { return; }
@@ -66,7 +64,7 @@ namespace AgentDemo
                     // 发送漏洞信息
                     var msg = BugInfo.GetInstance(request, info, stackTrace);
                     Debuger.WriteLine($"发送的漏洞信息: {msg.GetJsonString()}");
-                    await SendJsonMsg(msg, AgentConfig.GetInstance());
+                    await SendJsonMsg(msg);
                 }
                 // 根据插件配置选择是否拦截
                 if (AgentConfig.GetInstance().BLOCK)
@@ -82,18 +80,17 @@ namespace AgentDemo
         /// <param name="iastrange">检测范围</param>
         public static async void SendCheckRequest(params string[] iastrange)
         {
-            var request = XTool.HttpHelper.GetCurrentHttpRequest();
+            var request = HttpHelper.GetCurrentHttpRequest();
             // 不带有XMFLOW标记的请求将被转发
             if (HttpHelper.IsNeedRequest(request))
             {
                 try
                 {
-                    var agent = AgentConfig.GetInstance();
                     var requestJson = Request.GetInstance(request, iastrange);
-                    var response = await SendJsonMsg(requestJson, agent);
-                    response = GetResponseJsonData(response, agent, out _);
-                    Debuger.WriteLine(agent.DEBUG, $"转发的请求: {requestJson.GetJsonString()}");
-                    Debuger.WriteLine(agent.DEBUG, $"接收的回复: {JsonConvert.DeserializeObject(response)}");
+                    var response = await SendJsonMsg(requestJson);
+                    response = GetResponseJsonData(response, out _);
+                    Debuger.WriteLine( $"转发的请求: {requestJson.GetJsonString()}");
+                    Debuger.WriteLine( $"接收的回复: {JsonConvert.DeserializeObject(response)}");
                 }
                 catch (Exception e)
                 {

@@ -23,32 +23,8 @@ namespace AgentDemo.Json
                     public int VersionMain { get; set; }
                     [JsonProperty("version_pocs")]
                     public int VersionPocs { get; set; }
-                    private string localip= string.Empty;
                     [JsonProperty("ip")]
-                    public string IP
-                    {
-                        get
-                        {
-                            if (!string.IsNullOrEmpty(localip))
-                            {
-                                return localip;
-                            }
-                            // 获取本机IP
-                            foreach(var address in Dns.GetHostAddresses(Dns.GetHostName()))
-                            {
-                                if (address.AddressFamily == AddressFamily.InterNetwork)
-                                {
-                                    localip = address.ToString();
-                                    break;
-                                }
-                            }
-                            if (string.IsNullOrEmpty(localip))
-                            {
-                                throw new Exception("心跳信息创建失败：找不到本地ipv4");
-                            }
-                            return localip;
-                        }
-                    }
+                    public string IP { get; set; }
                     [JsonProperty("language")]
                     public string Language { get; set; }
                     [JsonProperty("language_version")]
@@ -75,6 +51,7 @@ namespace AgentDemo.Json
                             LanguageVersion = "core 3.1",
                             Server = "",
                             ServerVersion = "",
+                            IP = AgentConfig.GetInstance().LocalIP
                         },
                         Cmd = 9001,
                     };

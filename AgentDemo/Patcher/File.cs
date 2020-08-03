@@ -8,72 +8,96 @@ namespace AgentDemo.Patcher
     public class File
     {
 
-        /// <summary>
-        /// 检测info是否有文件读取漏洞
-        /// </summary>
-        /// <param name="info">检测的信息</param>
-        static void CheckFileRead(string info)
-        {
-            // 发送检测请求
-            Checker.SendCheckRequest("file_read");
-            // 检测漏洞(IAST)
-            Checker.Check(new Checker.FileRead(), info, BasePatcher.GetStackTrace());
-        }
-
         [HarmonyPatch(typeof(WebClient))]
         [HarmonyPatch(nameof(WebClient.DownloadData), new Type[] { typeof(string) })]
-        class DownloadData:BasePatcher
+        class DownloadData : BasePatcher
         {
             protected static bool Prefix(string address)
             {
-                CheckFileRead(address);
+                Checker.SendCheckRequest("file_read");
+                Checker.Check(new Checker.FileRead(), address, GetStackTrace());
                 return true;
             }
         }
 
         [HarmonyPatch(typeof(System.IO.File))]
-        [HarmonyPatch(nameof(File.OpenRead), new Type[] { typeof(string) })]
-        class OpenRead:BasePatcher
+        [HarmonyPatch("OpenRead", new Type[] { typeof(string) })]
+        class OpenRead : BasePatcher
         {
-            static bool Prefix(string path)
+            protected static bool Prefix(string path)
             {
-                CheckFileRead(path);
+                Checker.SendCheckRequest("file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                 return true;
             }
         }
 
         [HarmonyPatch(typeof(System.IO.File))]
-        [HarmonyPatch(nameof(File.ReadAllBytes), new Type[] { typeof(string) })]
-        class ReadAllBytes:BasePatcher
+        [HarmonyPatch("ReadAllBytes", new Type[] { typeof(string) })]
+        class ReadAllBytes : BasePatcher
         {
-            static bool Prefix(string path)
+            protected static bool Prefix(string path)
             {
-                CheckFileRead(path);
+                Checker.SendCheckRequest("file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                 return true;
             }
         }
-    
+
         [HarmonyPatch(typeof(System.IO.File))]
-        [HarmonyPatch(nameof(File.ReadAllText), new Type[] { typeof(string) })]
-        class ReadAllText:BasePatcher
+        [HarmonyPatch("ReadAllText", new Type[] { typeof(string) })]
+        class ReadAllText : BasePatcher
         {
-            static bool Prefix(string path)
+            protected static bool Prefix(string path)
             {
-                CheckFileRead(path);
+                Checker.SendCheckRequest("file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                 return true;
             }
         }
-    
+
         [HarmonyPatch(typeof(System.IO.File))]
-        [HarmonyPatch(nameof(File.Delete), new Type[] { typeof(string) })]
-        class Delete:BasePatcher
+        [HarmonyPatch("Delete", new Type[] { typeof(string) })]
+        class Delete : BasePatcher
         {
-            static bool Prefix(string path)
+            protected static bool Prefix(string path)
             {
-                CheckFileRead(path);
+                Checker.SendCheckRequest("file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                 return true;
             }
         }
+
+        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch("Create", new Type[] { typeof(string) })]
+        class Create : BasePatcher
+        {
+            protected static bool Prefix(string path)
+            {
+                Checker.SendCheckRequest("file_upload");
+                // Checker.Check(new Checker.FileRead(), path, GetStackTrace());
+                Checker.Check(new Checker.FileUpload(), path, GetStackTrace());
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch("Copy", new Type[] { typeof(string),typeof(string) })]
+        class Copy : BasePatcher
+        {
+            protected static bool Prefix(string sourceFileName, string destFileName)
+            {
+                if (destFileName.Contains(sourceFileName))
+                {
+                    Checker.SendCheckRequest("file_upload");
+                    // Checker.Check(new Checker.FileRead(), path, GetStackTrace());
+                    Checker.Check(new Checker.FileUpload(), destFileName, GetStackTrace());
+                }
+                return true;
+            }
+        }
+
+
 
     }
 }
