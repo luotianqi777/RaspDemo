@@ -44,7 +44,7 @@ namespace AgentDemo.Json
                             }
                             if (string.IsNullOrEmpty(localip))
                             {
-                                throw new Exception("找不到本地ipv4");
+                                throw new Exception("心跳信息创建失败：找不到本地ipv4");
                             }
                             return localip;
                         }

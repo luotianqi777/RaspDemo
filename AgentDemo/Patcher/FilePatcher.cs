@@ -54,6 +54,17 @@ namespace AgentDemo.Patcher
         }
     
         [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(nameof(File.ReadAllText), new Type[] { typeof(string) })]
+        class ReadAllText
+        {
+            static bool Prefix(string path)
+            {
+                CheckFileRead(path);
+                return true;
+            }
+        }
+    
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch(nameof(File.Delete), new Type[] { typeof(string) })]
         class Delete
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Crypto.Paddings;
@@ -21,9 +22,8 @@ namespace MVCDemo.Controllers
             return View();
         }
 
-
         [HttpGet]
-        public IActionResult Download(string url)
+        public IActionResult DownloadData(string url)
         {
             try
             {
@@ -40,7 +40,8 @@ namespace MVCDemo.Controllers
             }
         }
 
-        public IActionResult Download2(string url)
+        [HttpGet]
+        public IActionResult OpenRead(string url)
         {
             try
             {
@@ -54,5 +55,52 @@ namespace MVCDemo.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public IActionResult ReadAllBytes(string url)
+        {
+            try
+            {
+                var data = System.IO.File.ReadAllBytes(url);
+                var contentType = "APPLICATION/octet-stream";
+                return File(data, contentType, url);
+            }
+            catch(Exception e)
+            {
+                Debuger.WriteLine($"文件下载失败：{url}，原因：{e.Message}");
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ReadAllText(string url)
+        {
+            try
+            {
+                var data = Encoding.UTF8.GetBytes(System.IO.File.ReadAllText(url));
+                var contentType = "APPLICATION/octet-stream";
+                return File(data, contentType, url);
+            }
+            catch(Exception e)
+            {
+                Debuger.WriteLine($"文件下载失败：{url}，原因：{e.Message}");
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Delete(string url)
+        {
+            try
+            {
+                System.IO.File.Delete(url);
+            }
+            catch(Exception e)
+            {
+                Debuger.WriteLine($"文件删除失败：{url}，原因：{e.Message}");
+            }
+            return View();
+        }
+
     }
 }
