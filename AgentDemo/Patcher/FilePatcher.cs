@@ -14,11 +14,10 @@ namespace AgentDemo.Patcher
         /// <param name="info">检测的信息</param>
         static void CheckFileRead(string info)
         {
-            var context = XTool.HttpHelper.GetCurrentHttpContext();
             // 发送检测请求
-            Checker.SendCheckRequest(context, "file_read");
+            Checker.SendCheckRequest("file_read");
             // 检测漏洞(IAST)
-            Checker.Check(new Checker.FileRead(), context, info, "文件下载漏洞调用栈");
+            Checker.Check(new Checker.FileRead(), info, "文件下载漏洞调用栈");
         }
 
         [HarmonyPatch(typeof(WebClient))]

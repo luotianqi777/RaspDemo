@@ -15,10 +15,9 @@ namespace AgentDemo.Patcher
                 Type type = XPatchAttribute.GetPatchedClassType<ExecuteReader>();
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
                 // 发送检测请求
-                var context = XTool.HttpHelper.GetCurrentHttpContext();
-                Checker.SendCheckRequest(context, "sql");
+                Checker.SendCheckRequest("sql");
                 // IAST检测
-                Checker.Check(new Checker.SQL(), context, sqlCommand, "Sql调用栈");
+                Checker.Check(new Checker.SQL(), sqlCommand, "Sql调用栈");
                 return true;
             }
         }

@@ -56,14 +56,14 @@ namespace AgentDemo
         /// 自动检测当前request是否为IAST检测请求，是则检测该位置是否含有漏洞，有则自动发送到IAST服务器并根据插件配置选择是否拦截。
         /// </summary>
         /// <param name="checker">检测(info)参数是否有攻击内容的方法</param>
-        /// <param name="context">当前http上下文</param>
         /// <param name="info">hook拿到的info</param>
         /// <param name="stackTrace">函数调用栈</param>
-        public static async void Check(AbstractChecker checker, HttpContext context, string info, string stackTrace)
+        public static async void Check(AbstractChecker checker, string info, string stackTrace)
         {
-            if (checker == null || context == null || string.IsNullOrEmpty(info)) { return; }
+            var context = XTool.HttpHelper.GetCurrentHttpContext();
             var request = context?.Request;
             var response = context?.Response;
+            if (checker == null || context == null || request == null || response == null || string.IsNullOrEmpty(info)) { return; }
             if (HttpHelper.IsNeedCheck(request))
             {
                 // 获取url中的payload
@@ -86,11 +86,10 @@ namespace AgentDemo
         /// <summary>
         /// 自动检测将当前的request是否需要转发，需要的话将包装成检测请求并发送到IAST服务器
         /// </summary>
-        /// <param name="context">当前的http上下文</param>
         /// <param name="iastrange">检测范围</param>
-        public static async void SendCheckRequest(HttpContext context, params string[] iastrange)
+        public static async void SendCheckRequest(params string[] iastrange)
         {
-            var request = context?.Request;
+            var request = XTool.HttpHelper.GetCurrentHttpRequest();
             // 不带有XMFLOW标记的请求将被转发
             if (HttpHelper.IsNeedRequest(request))
             {
