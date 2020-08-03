@@ -17,10 +17,14 @@ namespace AgentDemo
         private int timeOut = 1000 * 5;
         public int TimeOut { get { return timeOut; } set { timeOut = value; } }
         public bool DEBUG { get; set; }
+        // 是否拦截漏洞
+        public bool BLOCK { get; set; }
         public override string ToString()
         {
             return $"AgentID:{AgentID}, AesKey:{AesKey}, AesTag:{AesTag}, AesNonce:{AesNonce}";
         }
+
+        private static AgentConfig agentConfig = null;
 
         /// <summary>
         /// 获取Agent配置信息
@@ -29,15 +33,17 @@ namespace AgentDemo
         /// <returns>Agent配置信息</returns>
         public static AgentConfig GetInstance()
         {
-            return new AgentConfig()
+            agentConfig ??= new AgentConfig()
             {
                 Port = 9090,
                 IP = "192.168.172.239",
                 TimeOut = 30 * 1000,
-                AgentID = "DMHUEHFXSQADARKH",
-                AesKey = "WPOIVXHUZINJRDQC",
+                AgentID = "GAFNOAPJQOCENEQM",
+                AesKey = "RWPHOFM1GEOTWOWL",
                 DEBUG = true,
+                BLOCK = false
             };
+            return agentConfig;
         }
     }
 }

@@ -15,16 +15,18 @@ namespace AgentDemo
             /// <returns>是返回true，否则返回false</returns>
             public static bool IsNeedRequest(HttpRequest request)
             {
-                return request.Headers.TryGetValue("XMFLOW", out _);
+                if (request == null) { return false; }
+                return !request.Headers.TryGetValue("XMFLOW", out _);
             }
 
             /// <summary>
             /// 判断一个请求是否需要检测(通过XMIAST标识)
             /// </summary>
             /// <param name="request"></param>
-            /// <returns></returns>
+            /// <returns>是返回true，否则返回false</returns>
             public static bool IsNeedCheck(HttpRequest request)
             {
+                if (request == null) { return false; }
                 return request.Headers.TryGetValue("XMIAST", out _);
             }
 
@@ -35,7 +37,7 @@ namespace AgentDemo
 
             public static HttpRequest GetCurrentHttpRequest()
             {
-                return GetCurrentHttpContext().Request;
+                return GetCurrentHttpContext()?.Request;
             }
 
             public static string GetCurrentUrl()
@@ -50,14 +52,21 @@ namespace AgentDemo
             /// <returns>请求的url</returns>
             public static string GetUrl(HttpRequest request)
             {
-                return new StringBuilder()
-                    .Append(request.Scheme)
-                    .Append("://")
-                    .Append(request.Host)
-                    .Append(request.PathBase)
-                    .Append(request.Path)
-                    .Append(request.QueryString)
-                    .ToString();
+                if (request != null)
+                {
+                    return new StringBuilder()
+                        .Append(request.Scheme)
+                        .Append("://")
+                        .Append(request.Host)
+                        .Append(request.PathBase)
+                        .Append(request.Path)
+                        .Append(request.QueryString)
+                        .ToString();
+                }
+                else
+                {
+                    return string.Empty;
+                }
             }
         }
     }

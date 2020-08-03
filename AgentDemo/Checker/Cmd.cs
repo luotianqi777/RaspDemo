@@ -6,10 +6,9 @@ namespace AgentDemo
 {
     public partial class Checker
     {
-        public class Cmd:IChecker
+        public class Cmd : AbstractChecker
         {
-
-            public bool IsBug(string info)
+            public override bool CheckInfo(string info)
             {
                 return true;
             }

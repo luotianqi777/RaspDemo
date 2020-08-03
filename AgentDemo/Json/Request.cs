@@ -62,10 +62,8 @@ namespace AgentDemo.Json
             /// <param name="iastrange">漏洞检测范围</param>
             public static Request GetInstance(HttpRequest request, params string[] iastrange)
             {
-                if (iastrange.Length == 0)
-                {
-                    Debuger.WriteLine("警告：iastrange的个数为零");
-                }
+                if (request == null) { return null; }
+                if (iastrange.Length == 0) { Debuger.WriteLine("警告：iastrange的个数为零"); }
                 var headers = request.Headers;
                 var url =  XTool.HttpHelper.GetUrl(request);
                 // TODO: 找不到直接获取param的办法，目前通过搜索?来截取

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Web;
 using static AgentDemo.Json.XJson;
@@ -9,26 +11,59 @@ namespace AgentDemo
 {
     public partial class Checker
     {
-        public interface IChecker
+        public abstract class AbstractChecker
         {
+
             /// <summary>
-            /// 检测是否有漏洞
+            /// 检测info是否有漏洞
             /// </summary>
-            /// <param name="info">检测的信息</param>
+            /// <param name="info">检测的info</param>
             /// <returns>有则返回true</returns>
-            bool IsBug(string info) { return true; }
+            public abstract bool CheckInfo(string info);
+
+            /// <summary>
+            /// 检测payload是否有漏洞，默认采用CheckInfoBug
+            /// </summary>
+            /// <param name="payload">检测的payload</param>
+            /// <returns>有则返回true</returns>
+            public virtual bool CheckPayload(string payload)
+            {
+                return CheckInfo(payload);
+            }
+
+            /// <summary>
+            /// 根据插件配置选择是否拦截
+            /// </summary>
+            /// <param name="response"></param>
+            public void Block(HttpResponse response) {
+                if (AgentConfig.GetInstance().BLOCK)
+                {
+                    BlockAction(response);
+                }
+            }
+
+            /// <summary>
+            /// 拦截行为
+            /// </summary>
+            /// <param name="response">当前回response/param>
+            public virtual void BlockAction(HttpResponse response) {
+                response.Redirect("/");
+            }
+
         }
 
         /// <summary>
-        /// 自动检测当前request是否为IAST检测请求，是则检测该位置是否含有漏洞，有则自动发送到IAST服务器。
+        /// 自动检测当前request是否为IAST检测请求，是则检测该位置是否含有漏洞，有则自动发送到IAST服务器并根据插件配置选择是否拦截。
         /// </summary>
         /// <param name="checker">检测(info)参数是否有攻击内容的方法</param>
-        /// <param name="request">当前http请求</param>
+        /// <param name="context">当前http上下文</param>
         /// <param name="info">hook拿到的info</param>
         /// <param name="stackTrace">函数调用栈</param>
-        public static async void Check(IChecker checker, HttpRequest request, string info, string stackTrace)
+        public static async void Check(AbstractChecker checker, HttpContext context, string info, string stackTrace)
         {
-            if (string.IsNullOrEmpty(info)) { return; }
+            if (checker == null || context == null || string.IsNullOrEmpty(info)) { return; }
+            var request = context?.Request;
+            var response = context?.Response;
             if (HttpHelper.IsNeedCheck(request))
             {
                 // 获取url中的payload
@@ -37,9 +72,11 @@ namespace AgentDemo
                 if (index == -1) { return; }
                 var payload = url.Substring(index + 1);
                 // 检测info -> 检测payload -> 检测info是否包含payload
-                if (checker.IsBug(info) && checker.IsBug(payload) && info.Contains(payload))
+                if (checker.CheckInfo(info) && checker.CheckPayload(payload) && info.Contains(payload))
                 {
                     var msg = BugInfo.GetInstance(request, info, stackTrace);
+                    // 拦截
+                    checker.Block(response);
                     Debuger.WriteLine($"发送的漏洞信息: {msg.GetJsonString()}");
                     await SendJsonMsg(msg, AgentConfig.GetInstance());
                 }
@@ -49,12 +86,13 @@ namespace AgentDemo
         /// <summary>
         /// 自动检测将当前的request是否需要转发，需要的话将包装成检测请求并发送到IAST服务器
         /// </summary>
-        /// <param name="request">当前的request</param>
+        /// <param name="context">当前的http上下文</param>
         /// <param name="iastrange">检测范围</param>
-        public static async void SendCheckRequest(HttpRequest request, params string[] iastrange)
+        public static async void SendCheckRequest(HttpContext context, params string[] iastrange)
         {
+            var request = context?.Request;
             // 不带有XMFLOW标记的请求将被转发
-            if (!HttpHelper.IsNeedRequest(request))
+            if (HttpHelper.IsNeedRequest(request))
             {
                 try
                 {
