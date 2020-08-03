@@ -32,17 +32,6 @@ namespace AgentDemo
             }
 
             /// <summary>
-            /// 根据插件配置选择是否拦截
-            /// </summary>
-            /// <param name="response"></param>
-            public void Block(HttpResponse response) {
-                if (AgentConfig.GetInstance().BLOCK)
-                {
-                    BlockAction(response);
-                }
-            }
-
-            /// <summary>
             /// 拦截行为
             /// </summary>
             /// <param name="response">当前回response/param>
@@ -64,21 +53,25 @@ namespace AgentDemo
             var request = context?.Request;
             var response = context?.Response;
             if (checker == null || context == null || request == null || response == null || string.IsNullOrEmpty(info)) { return; }
-            if (HttpHelper.IsNeedCheck(request))
+            // 获取url中的payload
+            var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
+            var index = url.IndexOf('=');
+            if (index == -1) { return; }
+            var payload = url.Substring(index + 1);
+            // 检测info -> 检测payload -> 检测info是否包含payload
+            if (checker.CheckInfo(info) && checker.CheckPayload(payload) && info.Contains(payload))
             {
-                // 获取url中的payload
-                var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
-                var index = url.IndexOf('=');
-                if (index == -1) { return; }
-                var payload = url.Substring(index + 1);
-                // 检测info -> 检测payload -> 检测info是否包含payload
-                if (checker.CheckInfo(info) && checker.CheckPayload(payload) && info.Contains(payload))
+                if (HttpHelper.IsNeedCheck(request))
                 {
+                    // 发送漏洞信息
                     var msg = BugInfo.GetInstance(request, info, stackTrace);
-                    // 拦截
-                    checker.Block(response);
                     Debuger.WriteLine($"发送的漏洞信息: {msg.GetJsonString()}");
                     await SendJsonMsg(msg, AgentConfig.GetInstance());
+                }
+                // 根据插件配置选择是否拦截
+                if (AgentConfig.GetInstance().BLOCK)
+                {
+                    checker.BlockAction(response);
                 }
             }
         }
