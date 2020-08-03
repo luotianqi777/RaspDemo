@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace AgentDemo
 {
-    public partial class CheckLogic
+    public partial class Checker
     {
-        public static class SQL
+        public class SQL: IChecker
         {
             // sql关键字列表
             private static readonly string[] sqlCommandKeywordList = "and|exec|insert|select|drop|grant|alter|delete|update|count|chr|mid|master|truncate|char|declare|or|*|;|+|'|%".Split('|')
@@ -16,12 +16,7 @@ namespace AgentDemo
                 // .Select(str => { return str.Length == 1 ? str : $" {str} "; })
                 .ToArray();
 
-            /// <summary>
-            /// 判断一条sql语句有没有注入风险
-            /// </summary>
-            /// <param name="sqlCommand">sql语句</param>
-            /// <returns>有风险返回true，反之返回false</returns>
-            public static bool IsInject(string sqlCommand)
+            public bool IsBug(string sqlCommand)
             {
                 var userInputStartIndex = sqlCommand.IndexOf("=");
                 // 此处无需判断是否找到=，如果找不到index为-1，那么接下来会对整个sqlCommand进行检测

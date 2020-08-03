@@ -7,8 +7,17 @@ using static AgentDemo.XTool;
 
 namespace AgentDemo
 {
-    public partial class CheckLogic
+    public partial class Checker
     {
+        public interface IChecker
+        {
+            /// <summary>
+            /// 检测是否有漏洞
+            /// </summary>
+            /// <param name="info">检测的信息</param>
+            /// <returns>有则返回true</returns>
+            bool IsBug(string info) { return true; }
+        }
 
         /// <summary>
         /// 自动检测当前request是否为IAST检测请求，是则检测该位置是否含有漏洞，有则自动发送到IAST服务器。
@@ -17,18 +26,18 @@ namespace AgentDemo
         /// <param name="request">当前http请求</param>
         /// <param name="info">hook拿到的info</param>
         /// <param name="stackTrace">函数调用栈</param>
-        public static async void Check(Func<string,bool> checker ,HttpRequest request, string info, string stackTrace)
+        public static async void Check(IChecker checker, HttpRequest request, string info, string stackTrace)
         {
             if (string.IsNullOrEmpty(info)) { return; }
             if (HttpHelper.IsNeedCheck(request))
             {
-                var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
                 // 获取url中的payload
+                var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
                 var index = url.IndexOf('=');
                 if (index == -1) { return; }
                 var payload = url.Substring(index + 1);
                 // 检测info -> 检测payload -> 检测info是否包含payload
-                if (checker(info) && checker(payload) && info.Contains(payload))
+                if (checker.IsBug(info) && checker.IsBug(payload) && info.Contains(payload))
                 {
                     var msg = BugInfo.GetInstance(request, info, stackTrace);
                     Debuger.WriteLine($"发送的漏洞信息: {msg.GetJsonString()}");
@@ -62,5 +71,6 @@ namespace AgentDemo
                 }
             }
         }
+
     }
 }

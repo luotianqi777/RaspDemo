@@ -15,9 +15,9 @@ namespace AgentDemo.Patcher
                 string sqlCommand = type.GetProperty("CommandText").GetValue(__instance).ToString();
                 var request = XTool.HttpHelper.GetCurrentHttpRequest();
                 // 发送检测请求
-                CheckLogic.SendCheckRequest(request, "sql");
+                Checker.SendCheckRequest(request, "sql");
                 // IAST检测
-                CheckLogic.Check(CheckLogic.SQL.IsInject, request, sqlCommand, "Sql调用栈");
+                Checker.Check(new Checker.SQL(), request, sqlCommand, "Sql调用栈");
                 return true;
             }
         }
