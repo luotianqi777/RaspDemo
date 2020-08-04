@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
 using System;
@@ -78,8 +79,8 @@ namespace AgentDemo.Json
                 }
                 var referer = index == -1 ? url : url.Substring(0, index);
                 var data = new byte[0];
-                // 应该从head类型判断
-                if (request.Method == "POST")
+                // TODO: 应该从headers类型判断
+                if (request.HasFormContentType)
                 {
                     // 获取文件数据
                     data = new byte[request.Form.Files.Sum(f => f.Length)];

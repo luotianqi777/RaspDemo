@@ -30,6 +30,12 @@ namespace AgentDemo
             }
 
             /// <summary>
+            /// 获取payload
+            /// </summary>
+            /// <returns></returns>
+            public abstract string GetPayload();
+
+            /// <summary>
             /// 拦截行为
             /// </summary>
             /// <param name="response">当前回response/param>
@@ -56,6 +62,12 @@ namespace AgentDemo
             var index = url.IndexOf('=');
             if (index == -1) { return; }
             var payload = url.Substring(index + 1);
+            if (request.Method == "POST")
+            {
+                payload = request.Form.Files[0].FileName;
+            }
+            // TODO: 实现该位置
+            var payload = checker.GetPayload();
             // 检测info -> 检测payload -> 检测info是否包含payload
             if (checker.CheckInfo(info) && checker.CheckPayload(payload) && info.Contains(payload))
             {

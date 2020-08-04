@@ -23,12 +23,17 @@ namespace AgentDemo
                 }
                 return false;
             }
+
+            public override string GetPayload()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class FileUpload : AbstractChecker
         {
 
-            private readonly static string[] keywards = "cshtml|html".Split('|');
+            private readonly static string[] keywards = "cshtml|%00|;".Split('|');
 
             public override bool CheckInfo(string info)
             {
@@ -40,6 +45,11 @@ namespace AgentDemo
                     }
                 }
                 return false;
+            }
+
+            public override string GetPayload()
+            {
+                throw new NotImplementedException();
             }
         }
     }

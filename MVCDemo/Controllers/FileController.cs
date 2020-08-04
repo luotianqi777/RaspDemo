@@ -117,5 +117,12 @@ namespace MVCDemo.Controllers
             return Ok(new { count = files.Count, size });
         }
 
+        [HttpGet]
+        public IActionResult Upload(string url)
+        {
+            _ = url;
+            return View();
+        }
+
     }
 }
