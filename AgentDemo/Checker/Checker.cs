@@ -94,7 +94,7 @@ namespace AgentDemo
                 }
                 catch (Exception e)
                 {
-                    Debuger.WriteLine($"请求转发失败, 原因: {e.Message}");
+                    Debuger.WriteLine($"请求转发失败, 原因: {e.Message}调用栈：{e.StackTrace}");
                 }
             }
         }

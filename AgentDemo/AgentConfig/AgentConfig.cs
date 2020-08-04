@@ -43,8 +43,8 @@ namespace AgentDemo
                 IP = "192.168.172.239",
                 LocalIP = GetLocalIP(),
                 TimeOut = 30 * 1000,
-                AgentID = "GAFNOAPJQOCENEQM",
-                AesKey = "RWPHOFM1GEOTWOWL",
+                AgentID = "YSZLFIPIOISCWLXW",
+                AesKey = "KHHAJT1OCEDVSOTY",
                 DEBUG = true,
                 BLOCK = false
             };

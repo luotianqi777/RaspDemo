@@ -62,15 +62,16 @@ namespace AgentDemo.Startup
     {
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            bool isLive = true;
             int interTime = 1000 * 10;
-            while (!stoppingToken.IsCancellationRequested && isLive)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Run(async () =>
                 {
                     var doki = XJson.Doki.Sender.GetInstance();
+                    Debuger.WriteLine(doki);
                     var response = await XJson.SendJsonMsg(doki);
                     var rdoki = XJson.GetResponseJsonData(response, out _);
+                    Debuger.WriteLine(rdoki);
                 });
                 await Task.Delay(interTime, stoppingToken);
             }

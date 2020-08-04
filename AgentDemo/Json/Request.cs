@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using Org.BouncyCastle.Ocsp;
 using System;
+using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace AgentDemo.Json
 {
@@ -66,14 +68,26 @@ namespace AgentDemo.Json
                 if (iastrange.Length == 0) { Debuger.WriteLine("警告：iastrange的个数为零"); }
                 var headers = request.Headers;
                 var url =  XTool.HttpHelper.GetUrl(request);
-                // TODO: 找不到直接获取param的办法，目前通过搜索?来截取
+                // 找不到直接获取param的办法，目前通过搜索?来截取
                 var index = url.IndexOf('?');
-                if (index == -1)
+                if (index == -1 && request.Method=="GET")
                 {
                     throw new Exception("需要转发的url中找不到param");
                 }
-                var referer = url.Substring(0, index);
-
+                var referer = index == -1 ? url : url.Substring(0, index);
+                var data = new byte[0];
+                if (request.Method == "POST")
+                {
+                    // 获取文件数据
+                    data = new byte[request.Form.Files.Sum(f => f.Length)];
+                    var offset = 0;
+                    foreach (IFormFile file in request.Form.Files)
+                    {
+                        var size = (int)file.Length;
+                        file.OpenReadStream().ReadAsync(data, offset, size);
+                        offset += size;
+                    }
+                }
                 return new Request
                 {
                     Cmd = 4001,
@@ -83,7 +97,7 @@ namespace AgentDemo.Json
                             new XResult.XUrls {
                                 Method = request.Method,
                                 Url = url,
-                                Data = "",
+                                Data = Encoding.UTF8.GetString(data),
                                 Headers = new XResult.XUrls.XHeaders
                                 {
                                     Cookie = headers["Cookie"],
@@ -94,7 +108,7 @@ namespace AgentDemo.Json
                                     UserAgent = headers["User-Agent"],
                                     Host = headers["Host"],
                                     AcceptEncoding = headers["Accept-Encoding"],
-                                    AcceptLanguage = headers["Accept-Language"]
+                                    AcceptLanguage = headers["Accept-Language"],
                                 },
                                 Iastrange = iastrange
                             }

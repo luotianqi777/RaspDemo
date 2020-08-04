@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Crypto.Paddings;
 
 namespace MVCDemo.Controllers
 {
@@ -103,17 +100,28 @@ namespace MVCDemo.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Create(string url)
+        [HttpPost]
+        public IActionResult Upload()
         {
-            try
+            var files = Request.Form.Files;
+            long size = files.Sum(f => f.Length);
+            foreach(var formFile in files)
             {
-                System.IO.File.Create(url);
+                if (formFile.Length > 0)
+                {
+                    string fileName = formFile.FileName;
+                    // 读取数据
+                    var data = new byte[formFile.Length];
+                    formFile.OpenReadStream().ReadAsync(data);
+                    // 写入文件
+                    System.IO.File.Create(fileName).Close();
+                    var fileStream = new StreamWriter(fileName);
+                    fileStream.Write(Encoding.UTF8.GetString(data));
+                    fileStream.Flush();
+                    fileStream.Close();
+                }
             }
-            catch(Exception e) {
-                Debuger.WriteLine($"文件创建失败：{url}，原因：{e.Message}");
-            }
-            return View();
+            return Ok(new { count = files.Count, size });
         }
 
     }

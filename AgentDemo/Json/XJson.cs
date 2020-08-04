@@ -93,7 +93,7 @@ namespace AgentDemo.Json
         /// <returns>服务器响应消息</returns>
         public static async Task<string> SendJsonMsg(Msg msg)
         {
-            var jsonData = JsonData.GetInstance( msg);
+            var jsonData = JsonData.GetInstance(msg);
             var message = EncryptJsonData(jsonData);
             return await SendMessageAsync(message);
         }
