@@ -69,9 +69,10 @@ namespace AgentDemo.Startup
                 {
                     var doki = XJson.Doki.Sender.GetInstance();
                     Debuger.WriteLine(doki);
-                    var response = await XJson.SendJsonMsg(doki);
-                    var rdoki = XJson.GetResponseJsonData(response, out _);
-                    Debuger.WriteLine(rdoki);
+                    // var response = 
+                    await XJson.SendJsonMsg(doki);
+                    // var rdoki = XJson.GetResponseJsonData(response, out _);
+                    // Debuger.WriteLine(rdoki);
                 });
                 await Task.Delay(interTime, stoppingToken);
             }

@@ -83,7 +83,14 @@ namespace AgentDemo.Json
             }
             socket.Close();
 
-            return Encoding.UTF8.GetString(Convert.FromBase64String(response.ToString()));
+            try
+            {
+                return Encoding.UTF8.GetString(Convert.FromBase64String(response.ToString()));
+            }catch
+            {
+                // 编码有误
+                return null;
+            }
         }
 
         /// <summary>
