@@ -21,11 +21,7 @@ namespace AgentDemo.Patcher
             harmony.PatchAll();
             if (DEBUG)
             {
-                Debuger.WriteLine("Patch all method!\nmethod list:");
-                foreach (var value in harmony.GetPatchedMethods())
-                {
-                    Debuger.WriteLine("  " + value.Name);
-                }
+                Debuger.WriteLine("Patch all method!");
             }
         }
 

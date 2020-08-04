@@ -67,7 +67,7 @@ namespace AgentDemo
                     await SendJsonMsg(msg);
                 }
                 // 根据插件配置选择是否拦截
-                if (AgentConfig.GetInstance().BLOCK)
+                if (AgentConfig.BLOCK)
                 {
                     checker.BlockAction(response);
                 }
@@ -88,7 +88,6 @@ namespace AgentDemo
                 {
                     var requestJson = Request.GetInstance(request, iastrange);
                     var response = await SendJsonMsg(requestJson);
-                    response = GetResponseJsonData(response, out _);
                     Debuger.WriteLine( $"转发的请求: {requestJson.GetJsonString()}");
                     Debuger.WriteLine( $"接收的回复: {JsonConvert.DeserializeObject(response)}");
                 }

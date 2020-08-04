@@ -12,6 +12,7 @@ namespace AgentDemo.Json
     {
         public class Request : Msg
         {
+            #region Property
             [JsonProperty("result")]
             public XResult Result { get; set; }
             [JsonProperty("cmd")]
@@ -56,6 +57,7 @@ namespace AgentDemo.Json
                     }
                 }
             }
+            #endregion
 
             /// <summary>
             /// 获取一个请求转发Json数据
@@ -76,6 +78,7 @@ namespace AgentDemo.Json
                 }
                 var referer = index == -1 ? url : url.Substring(0, index);
                 var data = new byte[0];
+                // 应该从head类型判断
                 if (request.Method == "POST")
                 {
                     // 获取文件数据
@@ -97,7 +100,7 @@ namespace AgentDemo.Json
                             new XResult.XUrls {
                                 Method = request.Method,
                                 Url = url,
-                                Data = Encoding.UTF8.GetString(data),
+                                Data = Convert.ToBase64String(data),
                                 Headers = new XResult.XUrls.XHeaders
                                 {
                                     Cookie = headers["Cookie"],

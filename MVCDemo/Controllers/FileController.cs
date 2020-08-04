@@ -14,13 +14,6 @@ namespace MVCDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult Upload(string url)
-        {
-            _ = url;
-            return View();
-        }
-
-        [HttpGet]
         public IActionResult DownloadData(string url)
         {
             try

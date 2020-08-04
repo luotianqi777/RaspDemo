@@ -18,12 +18,10 @@ namespace AgentDemo.Json.Tests
         [TestMethod()]
         public void SendJsonTest()
         {
-            string message = "test_123_ABC";
-            string key = "LATNLOFPVVDGAEVG";
-            var encryptMessage = XTool.TypeConverter.AESEncrypt(message,key,out string tag, out string nonce);
-            var str = XTool.TypeConverter.AESDecrypt(encryptMessage, key, tag, nonce);
-            Console.WriteLine(str);
-            Assert.AreEqual(str, message);
+            int size = 3142411;
+            byte[] bytes = XTool.TypeConverter.IntToByte(size);
+            int otherSize = XTool.TypeConverter.ByteToInt(bytes);
+            Assert.AreEqual(size, otherSize);
         }
     }
 }

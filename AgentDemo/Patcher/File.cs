@@ -75,7 +75,6 @@ namespace AgentDemo.Patcher
             protected static bool Prefix(string path)
             {
                 Checker.SendCheckRequest("file_upload");
-                // Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                 Checker.Check(new Checker.FileUpload(), path, GetStackTrace());
                 return true;
             }
@@ -90,7 +89,6 @@ namespace AgentDemo.Patcher
                 if (destFileName.Contains(sourceFileName))
                 {
                     Checker.SendCheckRequest("file_upload");
-                    // Checker.Check(new Checker.FileRead(), path, GetStackTrace());
                     Checker.Check(new Checker.FileUpload(), destFileName, GetStackTrace());
                 }
                 return true;
