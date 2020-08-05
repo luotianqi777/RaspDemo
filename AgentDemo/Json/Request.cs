@@ -68,14 +68,13 @@ namespace AgentDemo.Json
             public static Request GetInstance(HttpRequest request, params string[] iastrange)
             {
                 if (request == null) { return null; }
-                if (iastrange.Length == 0) { Debuger.WriteLine("警告：iastrange的个数为零"); }
                 var headers = request.Headers;
                 var url =  XTool.HttpHelper.GetUrl(request);
                 // 找不到直接获取param的办法，目前通过搜索?来截取
                 var index = url.IndexOf('?');
-                if (index == -1 && request.Method=="GET")
+                if (index == -1 && request.Method == "GET" && iastrange.Length != 0)
                 {
-                    throw new Exception("需要转发的url中找不到param");
+                    throw new Exception("需要转发的Get检测请求中找不到param");
                 }
                 var referer = index == -1 ? url : url.Substring(0, index);
                 var data = new byte[0];

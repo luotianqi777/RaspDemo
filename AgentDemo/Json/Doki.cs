@@ -42,7 +42,7 @@ namespace AgentDemo.Json
                 {
                     ClientInfo = new XClientInfo
                     {
-                        VersionMain = 3010012,
+                        VersionMain = 3010016,
                         VersionPocs = 0,
                         Language = "C#",
                         LanguageVersion = "core 3.1",

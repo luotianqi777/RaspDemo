@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AgentDemo.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace AgentDemo.Startup
 {
@@ -9,7 +10,7 @@ namespace AgentDemo.Startup
             return async context =>
             {
                 Debuger.WriteLine(XTool.HttpHelper.GetUrl(context.Request));
-
+                // Checker.SendCheckRequest();
                 await next(context);
             };
         }

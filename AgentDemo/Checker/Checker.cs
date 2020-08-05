@@ -41,13 +41,19 @@ namespace AgentDemo
             /// </summary>
             /// <param name="response">当前回response/param>
             public virtual void BlockAction(HttpResponse response) {
-                response.Redirect("/");
+                try
+                {
+                    response.Redirect("https://www.baidu.com/");
+                }catch(Exception e)
+                {
+                    Debuger.WriteLine(e.Message);
+                }
             }
 
         }
 
         /// <summary>
-        /// 自动检测当前request是否为IAST检测请求，是则检测该位置是否含有漏洞，有则自动发送到IAST服务器并根据插件配置选择是否拦截。
+        /// 检测该位置是否含有漏洞，有则自动检测当前request是否为IAST检测请求，是则自动发送到IAST服务器，然后根据插件配置选择是否拦截。
         /// </summary>
         /// <param name="checker">检测(info)参数是否有攻击内容的方法</param>
         /// <param name="info">hook拿到的info</param>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace AgentDemo
@@ -35,8 +36,8 @@ namespace AgentDemo
             LocalIP = GetLocalIP();
             TimeOut = 30 * 1000;
             DEBUG = true;
-            BLOCK = false;
-            SetAgentKey("VG9tY2F0Oy87MTkyLjE2OC4xNzIuMjM5OzkwOTA7WU9RTVpZVkFTUEwxWU9IVztJQ1pGT0FCUEhaVVdWRldV");
+            BLOCK = true; 
+            SetAgentKey("VG9tY2F0Oy87MTkyLjE2OC4xNzIuMjM5OzkwOTA7T1JWS1pWVE9aUFBZT05aRjtNWEZBT1RNVFVSQU5ZQVBS");
         }
 
         private static void SetAgentKey(string key)
