@@ -8,9 +8,17 @@ namespace AgentDemo
     {
         public class Cmd : AbstractChecker
         {
+            private readonly static string[] keywords = "dir,|,&".Split(',');
             public override bool CheckInfo(string info, bool isPayload)
             {
-                return true;
+                foreach (string keyword in keywords)
+                {
+                    if (info.Contains(keyword))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
 
         }

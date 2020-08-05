@@ -17,8 +17,8 @@ namespace MVCDemo.Controllers
 
         private string GetUrlData(string url)
         {
-            
-            return "";
+            // 转发获取回复
+            return url;
         }
     }
 }

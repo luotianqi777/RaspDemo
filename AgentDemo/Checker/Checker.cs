@@ -43,7 +43,7 @@ namespace AgentDemo
             public virtual void BlockAction(HttpResponse response) {
                 try
                 {
-                    response.Redirect("https://www.baidu.com/");
+                    response.Redirect("/");
                 }catch(Exception e)
                 {
                     Debuger.WriteLine(e.Message);

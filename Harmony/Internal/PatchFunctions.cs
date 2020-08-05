@@ -139,7 +139,8 @@ namespace HarmonyLib
 		///
 		internal static MethodInfo UpdateWrapper(MethodBase original, PatchInfo patchInfo)
 		{
-			var debug = patchInfo.Debugging || Harmony.DEBUG;
+			// var debug = patchInfo.Debugging || Harmony.DEBUG;
+			var debug = false;
 
 			var sortedPrefixes = GetSortedPatchMethods(original, patchInfo.prefixes, debug);
 			var sortedPostfixes = GetSortedPatchMethods(original, patchInfo.postfixes, debug);

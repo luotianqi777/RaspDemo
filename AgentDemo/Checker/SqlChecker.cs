@@ -20,7 +20,7 @@ namespace AgentDemo
                 var checkedInfo = info.Substring(userInputStartIndex + 1).ToLower().Trim();
                 foreach(var keyWord in sqlCommandKeywordList)
                 {
-                    if (checkedInfo.IndexOf(keyWord) != -1)
+                    if (checkedInfo.Contains(keyWord))
                         return true;
                 }
                 return false;

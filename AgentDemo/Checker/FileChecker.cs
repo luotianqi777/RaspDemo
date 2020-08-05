@@ -19,7 +19,7 @@ namespace AgentDemo
             {
                 foreach(string keyward in keywards)
                 {
-                    if (info.IndexOf(keyward) != -1)
+                    if (info.Contains(keyward))
                     {
                         return true;
                     }
@@ -32,7 +32,7 @@ namespace AgentDemo
         public class FileUpload : AbstractChecker
         {
 
-            private readonly static string[] keywards = "html|%00|;".Split('|');
+            private readonly static string[] keywards = "xml|json|html|%00|;".Split('|');
 
             public override bool CheckInfo(string info, bool isPayload)
             {

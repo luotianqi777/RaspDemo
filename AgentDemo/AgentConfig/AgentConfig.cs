@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Utilities.Net;
+﻿using Newtonsoft.Json;
+using Org.BouncyCastle.Utilities.Net;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -13,7 +14,6 @@ namespace AgentDemo
         public static string AesTag;
         public static string AesNonce;
         public static int Port { get; set; }
-        public static int LocalPort { get; set; }
         public static string IP { get; set; }
         public static string LocalIP { get; set; }
         public static string AgentID { get; set; }
@@ -23,29 +23,32 @@ namespace AgentDemo
         public static bool DEBUG { get; set; }
         // 是否拦截漏洞
         public static bool BLOCK { get; set; }
-        public override string ToString()
-        {
-            return $"AgentID:{AgentID}, AesKey:{AesKey}, AesTag:{AesTag}, AesNonce:{AesNonce}";
-        }
+        public static string AgentKey { get; set; }
 
         static AgentConfig()
         {
-            Port = 9090;
-            LocalPort = 5000;
-            IP = "192.168.172.239";
-            LocalIP = GetLocalIP();
-            TimeOut = 30 * 1000;
-            DEBUG = true;
-            BLOCK = true; 
-            SetAgentKey("VG9tY2F0Oy87MTkyLjE2OC4xNzIuMjM5OzkwOTA7T1JWS1pWVE9aUFBZT05aRjtNWEZBT1RNVFVSQU5ZQVBS");
+            if (!ConfigureManger.ReadFromFile())
+            {
+                LocalIP = GetLocalIP();
+                TimeOut = 30 * 1000;
+                DEBUG = true;
+                BLOCK = true;
+                AgentKey = "VG9tY2F0Oy87MTkyLjE2OC4xNzIuMjM5OzkwOTA7T1JWS1pWVE9aUFBZT05aRjtNWEZBT1RNVFVSQU5ZQVBS";
+            }
+            AnalysisAgentKey();
         }
 
-        private static void SetAgentKey(string key)
+        /// <summary>
+        /// 分析AgentKey
+        /// </summary>
+        private static void AnalysisAgentKey()
         {
-            key = Encoding.UTF8.GetString(Convert.FromBase64String(key));
-            var keys = key.Split(';');
+            var keys = Encoding.UTF8.GetString(Convert.FromBase64String(AgentKey)).Split(';');
+            IP = keys[2];
+            Port = int.Parse(keys[3]);
             AesKey = keys[4];
             AgentID = keys[5];
+            ConfigureManger.SaveToFile();
         }
 
         #region GetLocalIP
@@ -53,7 +56,7 @@ namespace AgentDemo
         /// 获取本机IP
         /// </summary>
         /// <returns></returns>
-        private static string GetLocalIP()
+        protected static string GetLocalIP()
         {
             foreach (var address in Dns.GetHostAddresses(Dns.GetHostName()))
             {
