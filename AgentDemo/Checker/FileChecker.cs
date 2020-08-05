@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.IO.Enumeration;
+using System.Linq;
 using System.Text;
 
 namespace AgentDemo
@@ -12,7 +15,7 @@ namespace AgentDemo
 
             private readonly static string[] keywards = "%00|;|../|..\\".Split('|');
 
-            public override bool CheckInfo(string info)
+            public override bool CheckInfo(string info, bool isPayload)
             {
                 foreach(string keyward in keywards)
                 {
@@ -24,18 +27,14 @@ namespace AgentDemo
                 return false;
             }
 
-            public override string GetPayload()
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public class FileUpload : AbstractChecker
         {
 
-            private readonly static string[] keywards = "cshtml|%00|;".Split('|');
+            private readonly static string[] keywards = "html|%00|;".Split('|');
 
-            public override bool CheckInfo(string info)
+            public override bool CheckInfo(string info, bool isPayload)
             {
                 foreach(string keyward in keywards)
                 {
@@ -47,9 +46,16 @@ namespace AgentDemo
                 return false;
             }
 
-            public override string GetPayload()
+            public override string PostPayload(HttpRequest request)
             {
-                throw new NotImplementedException();
+                var files = request.Form.Files;
+                StringBuilder dataBuilder = new StringBuilder();
+                foreach (var formFile in files)
+                {
+                    string fileName = formFile.FileName;
+                    dataBuilder.Append(fileName);
+                }
+                return dataBuilder.ToString();
             }
         }
     }

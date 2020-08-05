@@ -8,10 +8,11 @@ namespace AgentDemo
     {
         public class Cmd : AbstractChecker
         {
-            public override bool CheckInfo(string info)
+            public override bool CheckInfo(string info, bool isPayload)
             {
                 return true;
             }
+
         }
     }
 }

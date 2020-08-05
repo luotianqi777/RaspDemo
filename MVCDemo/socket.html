@@ -1,0 +1,131 @@
+//socket
+const aeskey = config['password'];
+const algorithm = 'aes-128-gcm';
+const timeout = 5 * 1000;
+
+function encryption(data) {
+    const iv = new Buffer.from(crypto.randomBytes(16), 'utf8');
+    const cipher = crypto.createCipheriv(algorithm, aeskey, iv);
+    let enc = cipher.update(data, 'utf8', 'base64');
+    enc += cipher.final('base64');
+    return [enc, iv.toString('base64'), cipher.getAuthTag().toString('base64')];
+}
+
+function decryption(data, iv, authTag) {
+    const decipher = crypto.createDecipheriv(algorithm, aeskey, Buffer.from(iv, 'base64'));
+    decipher.setAuthTag(Buffer.from(authTag, 'base64'));
+    let str = decipher.update(data, 'base64', 'utf8');
+    str += decipher.final('utf8');
+    return str;
+}
+
+function number2Bytes(i) {
+    var arr = new Int32Array(1);
+    arr[0] = 0;
+    var buf = Buffer.from(arr.buffer, 'hex');
+    buf.writeInt32LE(i);
+    return buf;
+};
+
+async function sync_communicate(msg) {
+    return await new Promise(
+        function (resolve, reject) {
+            const socket = new net.Socket();
+
+            socket.connect(config['port'], config['ip'], function () {
+                msg['client_info']['ip'] = socket.address()['address'];
+                var data = {
+                    "id": config['id'],
+                    "ts": parseInt(Date.now() / 1000),
+                    "msg": msg
+                }
+
+                const [encrypted, iv, authTag] = encryption(JSON.stringify(data));
+                var sendData = { "id": config['id'], "aes": encrypted, "aestag": authTag, "aesnonce": iv }
+                var json_buff = new Buffer.from(JSON.stringify(sendData), 'utf-8');
+                var length_buff = number2Bytes(JSON.stringify(sendData).length);
+                var buff = Buffer.concat([length_buff, json_buff]);
+                socket.write(buff);
+            });
+
+            socket.setTimeout(timeout, function () {
+                socket.end();
+            });
+
+            socket.on('data', function (data) {
+                var rdata = {}
+                if (data.readInt32LE() + 4 == socket.bytesRead) {
+                    var cryptJson = JSON.parse(data.toString('utf8', 4, socket.bytesRead));
+                    rdata = decryption(cryptJson['aes'], cryptJson['aesnonce'], cryptJson['aestag']);
+                }
+                if (!hasLog) {
+                    hasLog = true;
+                    logInfo(rdata);
+                };
+                resolve(JSON.parse(rdata));
+            });
+
+            socket.on('end', function () {
+                //console.log('client disconnected');
+            });
+
+            socket.on('error', function (err) {
+                logInfo('socket: ' + err);
+                reject({});
+            });
+
+            socket.on('close', function () {
+                //console.log('send: ' + socket.bytesWritten);
+                //console.log('recv: ' + socket.bytesRead);
+                resolve({})
+            });
+        }
+    ).catch(err => {
+        logInfo("socket catch: " + err); // catch error
+    });
+}
+
+function async_communicate(msg) {
+    const socket = new net.Socket();
+    socket.connect(config['port'], config['ip'], function () {
+        var data = {
+            "id": config['id'],
+            "ts": parseInt(Date.now() / 1000),
+            "msg": msg
+        }
+
+        const [encrypted, iv, authTag] = encryption(JSON.stringify(data));
+        var sendData = { "id": config['id'], "aes": encrypted, "aestag": authTag, "aesnonce": iv }
+        var json_buff = new Buffer.from(JSON.stringify(sendData), 'utf-8');
+        var length_buff = number2Bytes(JSON.stringify(sendData).length);
+        var buff = Buffer.concat([length_buff, json_buff]);
+        socket.write(buff);
+    });
+
+    socket.setTimeout(timeout, function () {
+        //console.log('timeout')
+        socket.end();
+    });
+
+    socket.on('data', function (data) {
+        var rdata = {}
+        if (data.readInt32LE() + 4 == socket.bytesRead) {
+            var cryptJson = JSON.parse(data.toString('utf8', 4, socket.bytesRead));
+            rdata = decryption(cryptJson['aes'], cryptJson['aesnonce'], cryptJson['aestag']);
+            //console.log(rdata);
+        }
+    });
+
+    socket.on('end', function () {
+        //console.log('client disconnected');
+    });
+
+    socket.on('error', function (err) {
+        logInfo(err);
+    });
+
+    socket.on('close', function () {
+        //console.log('send: ' + socket.bytesWritten);
+        //console.log('recv: ' + socket.bytesRead);
+    });
+}

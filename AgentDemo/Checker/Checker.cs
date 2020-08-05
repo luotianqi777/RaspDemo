@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Web;
 using static AgentDemo.Json.XJson;
@@ -16,24 +18,23 @@ namespace AgentDemo
             /// 检测info是否有漏洞
             /// </summary>
             /// <param name="info">检测的info</param>
+            /// <param name="isPayload">是否是payload</param>
             /// <returns>有则返回true</returns>
-            public abstract bool CheckInfo(string info);
+            public abstract bool CheckInfo(string info, bool isPayload=false); 
 
-            /// <summary>
-            /// 检测payload是否有漏洞，默认采用CheckInfoBug
-            /// </summary>
-            /// <param name="payload">检测的payload</param>
-            /// <returns>有则返回true</returns>
-            public virtual bool CheckPayload(string payload)
+            public virtual string GetPayload(HttpRequest request)
             {
-                return CheckInfo(payload);
+                // 获取url中的payload
+                var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
+                var index = url.IndexOf('=');
+                // 如果为-1则返回整个url
+                return url.Substring(index + 1);
             }
 
-            /// <summary>
-            /// 获取payload
-            /// </summary>
-            /// <returns></returns>
-            public abstract string GetPayload();
+            public virtual string PostPayload(HttpRequest request)
+            {
+                throw new NotImplementedException();
+            }
 
             /// <summary>
             /// 拦截行为
@@ -57,19 +58,22 @@ namespace AgentDemo
             var request = context?.Request;
             var response = context?.Response;
             if (checker == null || context == null || request == null || response == null || string.IsNullOrEmpty(info)) { return; }
-            // 获取url中的payload
-            var url = HttpUtility.UrlDecode(HttpHelper.GetUrl(request));
-            var index = url.IndexOf('=');
-            if (index == -1) { return; }
-            var payload = url.Substring(index + 1);
-            if (request.Method == "POST")
+            // 获取payload
+            string payload = string.Empty;
+            switch (request.Method)
             {
-                payload = request.Form.Files[0].FileName;
+                case "GET":
+                    payload = checker.GetPayload(request);
+                    break;
+                case "POST":
+                    payload = checker.PostPayload(request);
+                    break;
+                default:
+                    Debuger.WriteLine("未处理的请求类型");
+                    break;
             }
-            // TODO: 实现该位置
-            var payload = checker.GetPayload();
             // 检测info -> 检测payload -> 检测info是否包含payload
-            if (checker.CheckInfo(info) && checker.CheckPayload(payload) && info.Contains(payload))
+            if (checker.CheckInfo(info) && checker.CheckInfo(payload, true) && (info.Contains(payload) || payload.Contains(info)))
             {
                 if (HttpHelper.IsNeedCheck(request))
                 {

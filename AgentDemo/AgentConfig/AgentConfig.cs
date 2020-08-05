@@ -34,10 +34,17 @@ namespace AgentDemo
             IP = "192.168.172.239";
             LocalIP = GetLocalIP();
             TimeOut = 30 * 1000;
-            AgentID = "YSZLFIPIOISCWLXW";
-            AesKey = "KHHAJT1OCEDVSOTY";
             DEBUG = true;
             BLOCK = false;
+            SetAgentKey("VG9tY2F0Oy87MTkyLjE2OC4xNzIuMjM5OzkwOTA7WU9RTVpZVkFTUEwxWU9IVztJQ1pGT0FCUEhaVVdWRldV");
+        }
+
+        private static void SetAgentKey(string key)
+        {
+            key = Encoding.UTF8.GetString(Convert.FromBase64String(key));
+            var keys = key.Split(';');
+            AesKey = keys[4];
+            AgentID = keys[5];
         }
 
         #region GetLocalIP
