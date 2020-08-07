@@ -112,13 +112,14 @@ namespace HarmonyLib
 		///
 		public static void Log(string str)
 		{
-			lock (logPath)
-			{
-				using (var writer = File.AppendText(logPath))
-				{
-					writer.WriteLine(IndentString() + str);
-				}
-			}
+			_ = str; 
+			// lock (logPath)
+			// {
+			// 	using (var writer = File.AppendText(logPath))
+			// 	{
+			// 		writer.WriteLine(IndentString() + str);
+			// 	}
+			// }
 		}
 
 		/// <summary>Resets and deletes the log</summary>

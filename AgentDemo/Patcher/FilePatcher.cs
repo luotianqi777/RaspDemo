@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using HarmonyLib;
 
 namespace AgentDemo.Patcher
 {
-    public class File
+    public class FilePatcher
     {
 
+        #region FileRead
         [HarmonyPatch(typeof(WebClient))]
         [HarmonyPatch(nameof(WebClient.DownloadData), new Type[] { typeof(string) })]
         class DownloadData : BasePatcher
@@ -20,7 +22,7 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch("OpenRead", new Type[] { typeof(string) })]
         class OpenRead : BasePatcher
         {
@@ -32,7 +34,7 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch("ReadAllBytes", new Type[] { typeof(string) })]
         class ReadAllBytes : BasePatcher
         {
@@ -44,7 +46,7 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch("ReadAllText", new Type[] { typeof(string) })]
         class ReadAllText : BasePatcher
         {
@@ -56,19 +58,11 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(System.IO.File))]
-        [HarmonyPatch("Delete", new Type[] { typeof(string) })]
-        class Delete : BasePatcher
-        {
-            protected static bool Prefix(string path)
-            {
-                Checker.SendCheckRequest("file_read");
-                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
-                return true;
-            }
-        }
+        #endregion
 
-        [HarmonyPatch(typeof(System.IO.File))]
+        #region FileUpload
+
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch("Create", new Type[] { typeof(string) })]
         class Create : BasePatcher
         {
@@ -80,7 +74,7 @@ namespace AgentDemo.Patcher
             }
         }
 
-        [HarmonyPatch(typeof(System.IO.File))]
+        [HarmonyPatch(typeof(File))]
         [HarmonyPatch("Copy", new Type[] { typeof(string),typeof(string) })]
         class Copy : BasePatcher
         {
@@ -95,7 +89,34 @@ namespace AgentDemo.Patcher
             }
         }
 
+        #endregion
 
+        #region FileWrite
+
+        // [HarmonyPatch(typeof(StreamWriter))]
+        // [HarmonyPatch(new Type[] { typeof(string), typeof(bool), typeof(Encoding), typeof(int) })]
+        class Writer:BasePatcher
+        {
+            public static bool Prefix()
+            {
+                Checker.SendCheckRequest("file_write");
+                // Checker.Check(new Checker.FileRead(), path, GetStackTrace());
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(nameof(File.WriteAllLines), new Type[] { typeof(string), typeof(string[]) })]
+        class WriteAllLines : BasePatcher {
+            public static bool Prefix(string path)
+            {
+                Checker.SendCheckRequest("file_write", "file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
+                return true;
+            }
+        }
+
+        #endregion
 
     }
 }

@@ -78,7 +78,7 @@ namespace AgentDemo.Json
                 }
                 var referer = index == -1 ? url : url.Substring(0, index);
                 var data = new byte[0];
-                // TODO: 应该从headers类型判断
+                // 如果是表单
                 if (request.HasFormContentType)
                 {
                     // 获取文件数据

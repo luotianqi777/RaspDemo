@@ -124,5 +124,21 @@ namespace MVCDemo.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Write(string url)
+        {
+            try
+            {
+                // System.IO.File.WriteAllText(url, "");
+                System.IO.File.WriteAllLines(url, new string[] { "" });
+                // System.IO.StreamReader
+            }
+            catch (Exception e)
+            {
+                Debuger.WriteLine(e.Message);
+            }
+            return View();
+        }
+
     }
 }

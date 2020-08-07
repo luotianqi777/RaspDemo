@@ -169,7 +169,8 @@ namespace HarmonyLib
 			if (standin.method == null)
 				throw new ArgumentNullException($"{nameof(standin)}.{nameof(standin.method)}");
 
-			var debug = (standin.debug ?? false) || Harmony.DEBUG;
+			// var debug = (standin.debug ?? false) || Harmony.DEBUG;
+			var debug = false;
 
 			var transpilers = new List<MethodInfo>();
 			if (standin.reversePatchType == HarmonyReversePatchType.Snapshot)
