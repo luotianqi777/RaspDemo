@@ -19,7 +19,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "AgentDemo"
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "IastNetAgent"
       },
       "applicationUrl": "http://192.168.172.135:5000"
     }

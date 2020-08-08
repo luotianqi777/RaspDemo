@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AgentDemo\AgentDemo.csproj" />
+    <ProjectReference Include="..\AgentDemo\IastNetAgent.csproj" />
   </ItemGroup>
 
 </Project>

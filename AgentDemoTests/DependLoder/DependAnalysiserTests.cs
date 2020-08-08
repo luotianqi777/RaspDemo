@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AgentDemo.DependLoder;
+using IastNetAgent.DependLoder;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AgentDemo.DependLoder.Tests
+namespace IastNetAgent.DependLoder.Tests
 {
     [TestClass()]
     public class DependAnalysiserTests

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AgentDemo.Json;
+using IastNetAgent.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.IO;
 
-namespace AgentDemo.Json.Tests
+namespace IastNetAgent.Json.Tests
 {
     [TestClass()]
     public class JsonMangerTests
