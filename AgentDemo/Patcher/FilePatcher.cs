@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text;
 using HarmonyLib;
 
 namespace AgentDemo.Patcher
@@ -68,8 +67,8 @@ namespace AgentDemo.Patcher
         {
             protected static bool Prefix(string path)
             {
-                Checker.SendCheckRequest("file_upload");
-                Checker.Check(new Checker.FileUpload(), path, GetStackTrace());
+                Checker.SendCheckRequest("file_upload", "file_read");
+                Checker.Check(new Checker.FileUpload(), path, GetStackTrace(), type => type.Equals("file_read") ? "file_upload" : type);
                 return true;
             }
         }
@@ -82,8 +81,8 @@ namespace AgentDemo.Patcher
             {
                 if (destFileName.Contains(sourceFileName))
                 {
-                    Checker.SendCheckRequest("file_upload");
-                    Checker.Check(new Checker.FileUpload(), destFileName, GetStackTrace());
+                    Checker.SendCheckRequest("file_upload", "file_read");
+                    Checker.Check(new Checker.FileUpload(), destFileName, GetStackTrace(), type => type.Equals("file_read") ? "file_upload" : type);
                 }
                 return true;
             }
@@ -111,9 +110,7 @@ namespace AgentDemo.Patcher
             public static bool Prefix(string path)
             {
                 Checker.SendCheckRequest("file_write", "file_read");
-                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
-                    return type.Equals("file_read") ? "file_write" : type;
-                });
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(), type => type.Equals("file_read") ? "file_write" : type);
                 return true;
             }
         }
@@ -124,9 +121,7 @@ namespace AgentDemo.Patcher
             public static bool Prefix(string path)
             {
                 Checker.SendCheckRequest("file_write", "file_read");
-                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
-                    return type.Equals("file_read") ? "file_write" : type;
-                });
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(), type => type.Equals("file_read") ? "file_write" : type);
                 return true;
             }
         }
@@ -137,9 +132,7 @@ namespace AgentDemo.Patcher
             public static bool Prefix(string path)
             {
                 Checker.SendCheckRequest("file_write", "file_read");
-                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
-                    return type.Equals("file_read") ? "file_write" : type;
-                });
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(), type => type.Equals("file_read") ? "file_write" : type);
                 return true;
             }
         }

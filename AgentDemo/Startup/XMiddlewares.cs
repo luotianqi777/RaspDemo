@@ -11,7 +11,7 @@ namespace AgentDemo.Startup
             {
                 var request = XTool.HttpHelper.GetCurrentHttpRequest();
                 Debuger.WriteLine($"url:{XTool.HttpHelper.GetUrl(request)}, method:{request.Method}");
-                Debuger.WriteLine(XJson.Request.GetRequestBody(request));
+                Debuger.WriteLine(XTool.HttpHelper.GetRequestBody(request));
                 // Checker.SendCheckRequest();
                 await next(context);
             };

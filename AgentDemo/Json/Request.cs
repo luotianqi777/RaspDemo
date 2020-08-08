@@ -77,7 +77,7 @@ namespace AgentDemo.Json
                     throw new Exception("需要转发的Get检测请求中找不到param");
                 }
                 var referer = index == -1 ? url : url.Substring(0, index);
-                var data = GetRequestBody(request);
+                var data = XTool.HttpHelper.GetRequestBody(request);
                 return new Request
                 {
                     Cmd = 4001,
@@ -105,35 +105,6 @@ namespace AgentDemo.Json
                         },
                     }
                 };
-            }
-
-            /// <summary>
-            /// 获取请求数据，若非Post返回空字符串
-            /// </summary>
-            /// <param name="request">请求</param>
-            /// <returns>请求的数据</returns>
-            public static string GetRequestBody(HttpRequest request)
-            {
-                if (!request.HasFormContentType)
-                {
-                    // 非Post返回空字符串
-                    return string.Empty;
-                }
-                StringBuilder body = new StringBuilder();
-                // 获取boundary
-                var boundary = request.ContentType.Substring(request.ContentType.IndexOf("boundary") + 9);
-                foreach (var file in request.Form.Files)
-                {
-                    body.Append($"{boundary}\r\n");
-                    body.Append($"Content-Disposition: form-data; name=\"{file.Name}\"; filename=\"{file.FileName}\"\r\n");
-                    body.Append($"Content-Type: {file.ContentType}\r\n\r\n");
-                    var steam = file.OpenReadStream();
-                    var data = new byte[steam.Length];
-                    steam.Read(data);
-                    body.Append(Encoding.UTF8.GetString(data));
-                }
-                body.Append($"\r\n{boundary}--");
-                return body.ToString();
             }
 
         }
