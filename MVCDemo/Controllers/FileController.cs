@@ -98,14 +98,14 @@ namespace MVCDemo.Controllers
         {
             var files = Request.Form.Files;
             long size = files.Sum(f => f.Length);
-            foreach(var formFile in files)
+            foreach(var file in files)
             {
-                if (formFile.Length > 0)
+                if (file.Length > 0)
                 {
-                    string fileName = formFile.FileName;
+                    string fileName = file.FileName;
                     // 读取数据
-                    var data = new byte[formFile.Length];
-                    formFile.OpenReadStream().ReadAsync(data);
+                    var data = new byte[file.Length];
+                    file.OpenReadStream().ReadAsync(data);
                     // 写入文件
                     System.IO.File.Create(fileName).Close();
                     var fileStream = new StreamWriter(fileName);

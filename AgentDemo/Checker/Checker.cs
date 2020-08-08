@@ -58,7 +58,8 @@ namespace AgentDemo
         /// <param name="checker">检测(info)参数是否有攻击内容的方法</param>
         /// <param name="info">hook拿到的info</param>
         /// <param name="stackTrace">函数调用栈</param>
-        public static async void Check(AbstractChecker checker, string info, string stackTrace)
+        /// <param name="typeMap">漏洞类型映射：传入类型->返回类型，默认null：返回类型与传入类型相同</param>
+        public static async void Check(AbstractChecker checker, string info, string stackTrace, Func<string,string> typeMap = null )
         {
             var context = HttpHelper.GetCurrentHttpContext();
             var request = context?.Request;
@@ -84,7 +85,7 @@ namespace AgentDemo
                 if (HttpHelper.IsNeedCheck(request))
                 {
                     // 发送漏洞信息
-                    var msg = BugInfo.GetInstance(request, info, stackTrace);
+                    var msg = BugInfo.GetInstance(request, info, stackTrace, typeMap);
                     Debuger.WriteLine($"发送的漏洞信息: {msg.GetJsonString()}");
                     await SendJsonMsg(msg);
                 }

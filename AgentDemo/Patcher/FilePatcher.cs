@@ -111,7 +111,35 @@ namespace AgentDemo.Patcher
             public static bool Prefix(string path)
             {
                 Checker.SendCheckRequest("file_write", "file_read");
-                Checker.Check(new Checker.FileRead(), path, GetStackTrace());
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
+                    return type.Equals("file_read") ? "file_write" : type;
+                });
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(nameof(File.WriteAllText), new Type[] { typeof(string), typeof(string) })]
+        class WriteAllText : BasePatcher {
+            public static bool Prefix(string path)
+            {
+                Checker.SendCheckRequest("file_write", "file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
+                    return type.Equals("file_read") ? "file_write" : type;
+                });
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(File))]
+        [HarmonyPatch(nameof(File.WriteAllBytes), new Type[] { typeof(string), typeof(byte[]) })]
+        class WriteAllBytes : BasePatcher {
+            public static bool Prefix(string path)
+            {
+                Checker.SendCheckRequest("file_write", "file_read");
+                Checker.Check(new Checker.FileRead(), path, GetStackTrace(),type=> {
+                    return type.Equals("file_read") ? "file_write" : type;
+                });
                 return true;
             }
         }
