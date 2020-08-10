@@ -96,25 +96,34 @@ namespace MVCDemo.Controllers
         [HttpPost]
         public IActionResult Upload()
         {
-            var files = Request.Form.Files;
-            long size = files.Sum(f => f.Length);
-            foreach(var file in files)
+            
+            try
             {
-                if (file.Length > 0)
+                var files = Request.Form.Files;
+                long size = files.Sum(f => f.Length);
+                foreach (var file in files)
                 {
-                    string fileName = file.FileName;
-                    // 读取数据
-                    var data = new byte[file.Length];
-                    file.OpenReadStream().ReadAsync(data);
-                    // 写入文件
-                    System.IO.File.Create(fileName).Close();
-                    var fileStream = new StreamWriter(fileName);
-                    fileStream.Write(Encoding.UTF8.GetString(data));
-                    fileStream.Flush();
-                    fileStream.Close();
+                    if (file.Length > 0)
+                    {
+                        string fileName = file.FileName;
+                        // 读取数据
+                        var data = new byte[file.Length];
+                        file.OpenReadStream().ReadAsync(data);
+                        // 写入文件
+                        System.IO.File.Create(fileName).Close();
+                        var fileStream = new StreamWriter(fileName);
+                        fileStream.Write(Encoding.UTF8.GetString(data));
+                        fileStream.Flush();
+                        fileStream.Close();
+                    }
                 }
+                return Ok(new { count = files.Count, size });
             }
-            return Ok(new { count = files.Count, size });
+            catch(Exception e)
+            {
+                Debuger.WriteLine($"文件上传失败，错误：{e.Message}");
+                return View();
+            }
         }
 
         [HttpGet]
